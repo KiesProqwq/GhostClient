@@ -1,0 +1,16 @@
+[
+{
+  "modid": "BeterFPS",
+  "name": "BeterFPS",
+  "description": "Boost your FPS.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "kiespro.top",
+  "updateUrl": "",
+  "authorList": ["KiesPro"],
+  "credits": "KiesPro",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
