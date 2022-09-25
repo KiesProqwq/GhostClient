@@ -10,7 +10,7 @@ import cn.KiesPro.module.Module;
 public class NoJumpDelay extends Module {
 
 	public NoJumpDelay() {
-		super("NoJumpDelay", "Make your jump ticks = 0", Category.MOVEMENT);
+		super("NoJumpDelay", "Make your jump ticks = 0 (Mixin)", Category.MOVEMENT);
 	}
 	
 	public void onTick() {

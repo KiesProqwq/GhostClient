@@ -5,11 +5,9 @@ import java.util.ArrayList;
 
 import cn.KiesPro.Client;
 import cn.KiesPro.clickgui.hero.elements.ModuleButton;
-import cn.KiesPro.module.ModuleManager;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
-import net.minecraft.client.gui.Gui;
 
 /**
  *  Made by HeroCode
@@ -31,7 +29,6 @@ public class Panel {
 	public boolean visible;
 	public ArrayList<ModuleButton> Elements = new ArrayList<>();
 	public ClickGUI clickgui;
-	ModuleManager mm = new ModuleManager();
 
 	/*
 	 * Konstrukor
@@ -66,26 +63,24 @@ public class Panel {
 			y = y2 + mouseY;
 		}
 		
-		Color temp = ColorUtil.getClickGUIColor().darker();
+		Color temp = ColorUtils.getClickGUIColor().darker();
 		int outlineColor = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 170).getRGB();
 		
-		RenderUtil.drawRect(x, y, x + width, y + height, 0xff121212);
-		if(Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"), "Design").getValString().equalsIgnoreCase("New")){
+		RenderUtil.drawRect(x, y, x + width,y + height, 0xff121212);
+
 			RenderUtil.drawRect(x - 2, y, x, y + height, outlineColor);
 			FontUtil.drawStringWithShadow(title, x + 2, y + height / 2 - FontUtil.getFontHeight()/2, 0xffefefef);
-		} else if (Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"), "Design").getValString().equalsIgnoreCase("JellyLike")){
-			RenderUtil.drawRect(x + 4,			y + 2, x + 4.3, 		y + height - 2, 0xffaaaaaa);
-			RenderUtil.drawRect(x - 4 + width, y + 2, x - 4.3 + width, y + height - 2, 0xffaaaaaa);
-			FontUtil.drawTotalCenteredStringWithShadow(title, x + width / 2, y + height / 2, 0xffefefef);
-		}
+
 		
 		if (this.extended && !Elements.isEmpty()) {
 			double startY = y + height;
-			int epanelcolor = Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"), "Design").getValString().equalsIgnoreCase("New") ? 0xff232323 : Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"), "Design").getValString().equalsIgnoreCase("JellyLike") ? 0xbb151515 : 0;;
+			int epanelcolor = 0xff232323;
+			//0xbb151515
+			//0
 			for (ModuleButton et : Elements) {
-				if(Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"), "Design").getValString().equalsIgnoreCase("New")){
-					RenderUtil.drawRect(x - 2, startY, x + width, startY + et.height + 1, outlineColor);
-				}
+				
+				RenderUtil.drawRect(x - 2, startY, x + width, startY + et.height + 1, outlineColor);
+				
 				RenderUtil.drawRect(x, 	startY, x + width, startY + et.height + 1, epanelcolor);
 				et.x = x + 2;
 				et.y = startY;

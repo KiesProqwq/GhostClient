@@ -1,64 +1,69 @@
 package cn.KiesPro.command;
 
-import net.minecraft.client.network.NetHandlerPlayClient;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cn.KiesPro.command.commands.Config;
-import cn.KiesPro.command.commands.Help;
+import cn.KiesPro.Client;
+import cn.KiesPro.command.commands.*;
+import cn.KiesPro.event.eventapi.EventManager;
+import cn.KiesPro.event.eventapi.EventTarget;
+import cn.KiesPro.event.events.EventChat;
 
-/**
- * Created by peanut on 13/03/2021
- */
 public class CommandManager {
 
-    public NetHandlerPlayClient sendQueue;
-    private final static CommandManager me = new CommandManager();
-    private final List<Command> commands = new ArrayList();
-    private final String prefix = ".";
+	public List<Command> commands = new ArrayList<Command>();
+	public String prefix = ".";
 
-    public CommandManager() {
-        add(new Help());
-        add(new Config());
-    }
+	public CommandManager() {
+		setup();
+		EventManager.register(this);
+	}
 
-    public void add(Command command) {
-        this.commands.add(command);
-    }
+	public void setup() {
+		commands.add(new Help());
+		commands.add(new Bind());
+		commands.add(new Hide());
+		commands.add(new Toggle());
+		//commands.add(new Config());
+	}
+	
+	@EventTarget
+	public void handleChat(EventChat event) {
+		String message = event.getMessage();
+		//SelfDestruct
+		//if (Client.instance.destructed)
+		//	return;
+		
+		//NoCommand开启就返回
+		if (Client.instance.moduleManager.getModule("NoCommand").isToggled())
+			return;
+		//开头不带.就返回
+		if(!message.startsWith(prefix))
+			return;
 
-    public static CommandManager get() {
-        return me;
-    }
+		event.setCancelled(true);
 
-    public String getPrefix() {
-        return this.prefix;
-    }
+		message = message.substring(prefix.length());
 
-    public List<Command> getCommands() {
-        return this.commands;
-    }
+		boolean foundCommand = false;
 
-    public boolean execute(String text) {
-        if (!text.startsWith(prefix)) {
-            return false;
-        }
+		if(message.split(" ").length > 0) {
+			String commandName = message.split(" ")[0];
 
-        text = text.substring(1);
+			for(Command c : commands) {
+				if(c.aliases.contains(commandName) || c.name.equalsIgnoreCase(commandName)) {
+					c.onCommand(Arrays.copyOfRange(message.split(" "), 1, message.split(" ").length), message);
+					foundCommand = true;
+					break;
+				}
+			}
+		}
 
-        String[] arguments = text.split(" ");
-        String ranCmd = arguments[0];
-        for (Command cmd : this.commands) {
-            if (cmd.getName().equalsIgnoreCase(arguments[0])) {
-                String[] args = Arrays.copyOfRange(arguments, 1, arguments.length);
-                String[] args1 = text.split(" ");
-                cmd.execute(args);
-                return true;
-            }
-        }
-        Command.msg("The command \"§9" + ranCmd + "§7\" has not been found!");
-
-        return false;
-    }
+		if(!foundCommand) {
+			Client.instance.sendMessage("Could find the command.");
+		}
+	}
 }
+
+//Command.msg("The command \"§9" + ranCmd + "§7\" has not been found!");

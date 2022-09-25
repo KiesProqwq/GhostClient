@@ -19,11 +19,8 @@ public class PixelGameHelper extends Module {
 	}
 	
 	@SubscribeEvent
-	public void onRender(RenderGameOverlayEvent e) {	
-		if (Client.instance.destructed) {
-			return;
-		}
-        if(mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+	public void onRender(RenderGameOverlayEvent e) {
+        if (mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
         	
             final BlockPos pos = mc.objectMouseOver.getBlockPos();
             final Block block = mc.theWorld.getBlockState(pos).getBlock();

@@ -39,9 +39,6 @@ public class FastPlace extends Module {
 	
 	@SubscribeEvent
 	public void onTick(TickEvent.PlayerTickEvent e) {
-		if (Client.instance.destructed) {
-			return;
-		}
 		
         int c = (int)Client.instance.settingsManager.getSettingByName(this,"Speed").getValDouble();
         

@@ -1,6 +1,7 @@
 package cn.KiesPro.module.render;
 
-import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventTarget;
+import cn.KiesPro.event.events.EventUpdate;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 
@@ -12,15 +13,15 @@ public class Fullbright extends Module {
 		super("Fullbright", "Make your Bright", Category.RENDER);
 	}
 	
-	public void onEnable() {
-		if (Client.instance.destructed) {
-			return;
-		}
-		mc.gameSettings.gammaSetting = 1000f;
+	@EventTarget
+	public void onUpdate(EventUpdate e) {
+		mc.gameSettings.gammaSetting = 10f;
 	}
 	
-	public void onDisable() {
-		mc.gameSettings.gammaSetting = this.gamma;;
-	}
+    @Override
+    public void onDisable() {
+        super.onDisable();
+        mc.gameSettings.gammaSetting = 1.0f;
+    }
 
 }

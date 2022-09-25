@@ -17,7 +17,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class WTap extends Module {
 
-
     public static Setting range;
     public static Setting onlyPlayers;
     public static Setting minActionTicks, maxActionTicks, minOnceEvery, maxOnceEvery;

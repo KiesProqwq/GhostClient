@@ -1,8 +1,8 @@
 package cn.KiesPro.module.player;
 
-import javax.rmi.CORBA.Util;
-
 import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventTarget;
+import cn.KiesPro.event.events.EventUpdate;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
@@ -12,14 +12,10 @@ import cn.KiesPro.utils.raven.Utils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class ChestSteal extends Module {
 
 	private TimerUtils time = new TimerUtils();
-
-
 	
 	public ChestSteal() {
 		super("ChestSteal", "Steal things", Category.PLAYER);
@@ -37,16 +33,12 @@ public class ChestSteal extends Module {
 	 * 
 	 * bug:如同eagle开启后永久开启了 所以也嵌套一层关系
 	 */
-	@SubscribeEvent
-	public void onUpdate(TickEvent event) {
+	@EventTarget
+	public void onUpdate(EventUpdate event) {
 		if (Client.instance.moduleManager.getModule("ChestSteal").isToggled()) {
 
 			if (!Utils.isPlayerInGame())
 				return;
-
-			if (Client.instance.destructed) {
-				return;
-			}
 
 			double max = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();
 			double min = Client.instance.settingsManager.getSettingByName(this, "Min Delay").getValDouble();
@@ -79,7 +71,7 @@ public class ChestSteal extends Module {
 		int slotAmount;
 		boolean temp = true;
 
-		int n = slotAmount = container.inventorySlots.size() == 90 ? 54 : 27;
+		slotAmount = container.inventorySlots.size() == 90 ? 54 : 27;
 
 		for (int i = 0; i < slotAmount; ++i) {
 			if (!container.getSlot(i).getHasStack())

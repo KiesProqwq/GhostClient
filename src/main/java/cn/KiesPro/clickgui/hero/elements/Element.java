@@ -1,6 +1,7 @@
 package cn.KiesPro.clickgui.hero.elements;
 
 import cn.KiesPro.clickgui.hero.ClickGUI;
+
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.hero.FontUtil;
 

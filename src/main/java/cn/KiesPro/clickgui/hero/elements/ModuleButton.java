@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import org.lwjgl.input.Keyboard;
 
 import cn.KiesPro.Client;
-import cn.KiesPro.clickgui.hero.ClickGUI;
 import cn.KiesPro.clickgui.hero.Panel;
 import cn.KiesPro.clickgui.hero.elements.menu.ElementCheckBox;
 import cn.KiesPro.clickgui.hero.elements.menu.ElementComboBox;
@@ -15,11 +14,10 @@ import cn.KiesPro.clickgui.hero.elements.menu.ElementSlider;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-
 
 /**
  *  Made by HeroCode
@@ -72,7 +70,7 @@ public class ModuleButton {
 	 * Rendern des Elements 
 	 */
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		Color temp = ColorUtil.getClickGUIColor();
+		Color temp = ColorUtils.getClickGUIColor();
 		int color = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 150).getRGB();
 		
 		/*
@@ -112,7 +110,8 @@ public class ModuleButton {
 		 */
 		if (mouseButton == 0) {
 			mod.toggle();
-
+			
+			Minecraft.getMinecraft().thePlayer.playSound("random.click", 0.5f, 0.5f);
 		} else if (mouseButton == 1) {
 			/*
 			 * Wenn ein Settingsmenu existiert dann sollen alle Settingsmenus 
@@ -120,10 +119,10 @@ public class ModuleButton {
 			 */
 			if (menuelements != null && menuelements.size() > 0) {
 				boolean b = !this.extended;
-				ClickGUI clickgui = new ClickGUI();
-				clickgui.closeAllSettings();
+				Client.instance.heroGui.closeAllSettings();
 				this.extended = b;
 				
+				if(extended)Minecraft.getMinecraft().thePlayer.playSound("tile.piston.out", 1f, 1f);else Minecraft.getMinecraft().thePlayer.playSound("tile.piston.in", 1f, 1f);
 			}
 		} else if (mouseButton == 2) {
 			/*
@@ -133,21 +132,25 @@ public class ModuleButton {
 		}
 		return true;
 	}
-	
+
 	public boolean keyTyped(char typedChar, int keyCode) throws IOException {
-        if (this.listening) {
-            if (keyCode != 1 && keyCode != 211) {
-                Client.instance.sendMessage((String)("Bound '" + this.mod.getName() + "'" + " to '" + Keyboard.getKeyName((int)keyCode) + "'"));
-                this.mod.setKey(keyCode);
-            } else if (keyCode == 211) {
-            	Client.instance.sendMessage((String)("Unbound '" + this.mod.getName() + "'"));
-                this.mod.setKey(-1);
-            }
-            this.listening = false;
-            return true;
-        }
-        return false;
-    }
+		/*
+		 * Wenn listening, dann soll der n�chster Key (abgesehen 'ESCAPE') als Keybind f�r mod
+		 * danach soll nicht mehr gewartet werden!
+		 */
+		if (listening) {
+			if (keyCode != Keyboard.KEY_ESCAPE) {
+				Client.instance.sendMessage("Bound '" + mod.getName() + "'" + " to '" + Keyboard.getKeyName(keyCode) + "'");
+				mod.setKey(keyCode);
+			} else {
+				Client.instance.sendMessage("Unbound '" + mod.getName() + "'");
+				mod.setKey(Keyboard.KEY_NONE);
+			}
+			listening = false;
+			return true;
+		}
+		return false;
+	}
 
 	public boolean isHovered(int mouseX, int mouseY) {
 		return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;

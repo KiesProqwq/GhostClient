@@ -1,5 +1,7 @@
 package cn.KiesPro.module.render;
 
+import java.awt.Color;
+
 import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
@@ -26,17 +28,17 @@ public class ChestESP extends Module {
     		  //这种if关系就好了
     		  if (Client.instance.settingsManager.getSettingByName(this, "Chest").isEnabled()) {
     			  if (e instanceof TileEntityChest) {
-            		  RenderUtil.renderChest(e.getPos());
+    				  //yellow
+            		  RenderUtil.chestESPBox((TileEntity)e, 0, new Color(255, 170, 0, 1));
     			  }
     		  }
     		  
     		  if (Client.instance.settingsManager.getSettingByName(this, "EnderChest").isEnabled()) {
     			  if ((e instanceof TileEntityEnderChest)) {
-            		  RenderUtil.renderEnderChest(e.getPos());
+    				  //purple
+            		  RenderUtil.chestESPBox((TileEntity)e, 0, new Color(170, 0, 170, 1));
     			  }
-
     		  }
     	  }
     }
-    
 }

@@ -4,7 +4,7 @@ import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 
 /*
- * MixinEntityRenderer
+ * MixinEntityRenderer.java
  */
 public class NoHurtCam extends Module {
 

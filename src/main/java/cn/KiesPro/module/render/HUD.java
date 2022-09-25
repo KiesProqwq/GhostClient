@@ -11,6 +11,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.Sys;
 
 import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventTarget;
+import cn.KiesPro.event.events.EventRender2D;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
@@ -64,15 +66,12 @@ public class HUD extends Module {
         Client.instance.settingsManager.rSetting(rightOffSet);
     }
 
-    @SubscribeEvent
-    public void onRender(RenderGameOverlayEvent egoe) {
-        if (Client.instance.destructed){
-            return;
-        }
+    @EventTarget
+    public void onRender(EventRender2D egoe) {
 
-        if (egoe.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS || !active) {
-            return;
-        }
+        //if (egoe.type != RenderGameOverlayEvent.ElementType.CROSSHAIRS || !active) {
+        //   return;
+        //}
 
         sortMode = Client.instance.settingsManager.getSettingByName(this, "Arraylist sort").getValString();
         watermark = Client.instance.settingsManager.getSettingByName(this, "Watermark").getValBoolean();
@@ -116,7 +115,7 @@ public class HUD extends Module {
         }
 
         for (Module mod : modList) {
-            if (mod.visible && mod.isToggled()) {
+            if (mod.isVisible() && mod.isToggled()) {
                 FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
                 if(background) {
                     Gui.drawRect(sr.getScaledWidth() - fr.getStringWidth(mod.getName()) - margin * 2 - rightOffSet, topOffSet,sr.getScaledWidth() - rightOffSet, topOffSet + margin * 2 + fr.FONT_HEIGHT, 0x90000000);

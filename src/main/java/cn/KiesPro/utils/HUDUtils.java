@@ -137,7 +137,6 @@ public class HUDUtils {
    }
 
    public static void drawImage(ResourceLocation image, int x, int y, int width, int height, float alpha) {
-      ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
       GL11.glDisable(2929);
       GL11.glEnable(3042);
       GL11.glDepthMask(false);
@@ -553,7 +552,6 @@ public class HUDUtils {
                   GL11.glRotated(-mc.getRenderManager().playerViewY, 0.0D, 1.0D, 0.0D);
                   GlStateManager.disableDepth();
                   GL11.glScalef(0.03F + d, 0.03F, 0.03F + d);
-                  int base = 1;
                   d2p(0.0D, 95.0D, 10, 3, Color.black.getRGB());
 
                   for(i = 0; i < 6; ++i) {

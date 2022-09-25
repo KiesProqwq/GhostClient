@@ -1,19 +1,17 @@
 package cn.KiesPro;
 
-import java.util.List;
-
 import org.lwjgl.input.Keyboard;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
 import cn.KiesPro.clickgui.old.ClickGui;
 import cn.KiesPro.command.CommandManager;
-import cn.KiesPro.file.SaveLoad;
+import cn.KiesPro.file.ClickGuiFile;
+import cn.KiesPro.file.ConfigManager;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.module.ModuleManager;
 import cn.KiesPro.settings.SettingsManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -23,22 +21,26 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 public class Client
 {
 	public String CLIENT_NAME = "Kies";
-	public String CLIENT_VERSION = "1.5";
+	public String CLIENT_VERSION = "1.6";
 	
 	public String prefix = "§f[" + ChatFormatting.RED + "K§f" + "]";
-	
+	//Minecraft Instance
 	private final static Minecraft mc = Minecraft.getMinecraft();
-	
+	//instance
     public static Client instance;
+    //Manager
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
     public CommandManager commandManager;
-    
+    //ClickGUI
     public ClickGui oldClickGui;
+    public cn.KiesPro.clickgui.hero.ClickGUI heroGui;
+    //File
+    public ClickGuiFile saveclickgui;
+    public ConfigManager configmanager;
+    //BlatantMode
+    public boolean blatant = false;
     
-    public SaveLoad saveLoad;
-    
-    public boolean destructed = false;
     
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -50,20 +52,21 @@ public class Client
         
         oldClickGui = new ClickGui();
         
-    	saveLoad = new SaveLoad();
+        saveclickgui =  new ClickGuiFile();
+        configmanager = new ConfigManager();
     	
     	System.out.println("KiesPro is Load");
     }
     
     public void sendMessage(String message) {
         message = "§f[" + ChatFormatting.RED + "K§f" + "] " + message;
-        Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(message));
+        mc.thePlayer.addChatMessage(new ChatComponentText(message));
     }
     
     
     @SubscribeEvent
     public void key(KeyInputEvent e) {
-    	if (Minecraft.getMinecraft().theWorld == null || Minecraft.getMinecraft().thePlayer == null)
+    	if (mc.theWorld == null || Minecraft.getMinecraft().thePlayer == null)
     		return; 
     	try {
              if (Keyboard.isCreated()) {
@@ -80,23 +83,4 @@ public class Client
              }
          } catch (Exception q) { q.printStackTrace(); }
     }
-    
-    public void onDestruct() {
-    	if (Minecraft.getMinecraft().currentScreen != null && Minecraft.getMinecraft().thePlayer != null) {
-    		Minecraft.getMinecraft().thePlayer.closeScreen();
-    	}
-    	destructed = true;
-    	MinecraftForge.EVENT_BUS.unregister(this);
-    	for (int k = 0; k < this.moduleManager.modules.size(); k++) {
-    		Module m = this.moduleManager.modules.get(k);
-    		MinecraftForge.EVENT_BUS.unregister(m);
-    		this.moduleManager.getModuleList().remove(m);
-    	}
-    	this.moduleManager = null;
-    	this.oldClickGui = null;
-    }
-    
-	public static boolean check() {
-		return mc.thePlayer != null && mc.theWorld != null;
-	}
 }

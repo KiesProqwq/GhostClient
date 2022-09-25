@@ -1,17 +1,9 @@
 package cn.KiesPro.module.combat;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Random;
-
-import org.lwjgl.input.Mouse;
-
-import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.raven.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -21,21 +13,31 @@ import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Random;
+
 public class Reach extends Module {
 	
+    public static Setting throughBlocks;
     public static Setting reachMaxVal;
     public static  Setting reachMinVal;
     public  Random r;
     public static  Field pZ;
     public static  Field pX;
 
-	public Reach() {
-		super("Reach", "Reach", Category.COMBAT);
-        this.registerSetting(reachMinVal = new Setting("Max Range", this,3.3D, 3.0D, 6.0D, false));
-        this.registerSetting(reachMaxVal = new Setting("Max Range", this,3.3D, 3.0D, 6.0D, false));
-	}
-	
-	public static Object[] getMouseOver(double Range, double bbExpand, float f) {
+    public Reach() {
+        super("Reach", "Reach", Category.COMBAT);
+        r = new Random();
+        reachMinVal = new Setting("Min Reach",this, 3.0, 3.0, 6.0, true);
+         this.registerSetting(reachMinVal);
+        reachMaxVal = new Setting("Max Reach",this,  3.0, 3.0, 6.0, true);
+         this.registerSetting(reachMaxVal);
+        throughBlocks = new Setting("Through Blocks", this, false);
+         this.registerSetting(throughBlocks);
+    }
+
+    public static Object[] getMouseOver(double Range, double bbExpand, float f) {
         Entity renderViewEntity = mc.getRenderViewEntity();
         Entity entity = null;
         if (renderViewEntity == null || mc.theWorld == null) {
@@ -90,11 +92,7 @@ public class Reach extends Module {
         if(!Utils.currentScreenMinecraft())
             return;
 
-		if (Client.instance.destructed) {
-			return;
-		}
-		
-        if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+        if (!throughBlocks.isEnabled() && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             return;
         }
         double range = reachMinVal.getValDouble() + r.nextDouble() * (reachMaxVal.getValDouble() - reachMinVal.getValDouble());
@@ -102,7 +100,6 @@ public class Reach extends Module {
         if (mouseOver == null) {
             return;
         }
-        Vec3 lookVec = mc.thePlayer.getLookVec();
         mc.objectMouseOver = new MovingObjectPosition((Entity)mouseOver[0], (Vec3)mouseOver[1]);
         mc.pointedEntity = (Entity)mouseOver[0];
     }

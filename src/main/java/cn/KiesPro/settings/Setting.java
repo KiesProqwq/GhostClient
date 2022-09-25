@@ -68,8 +68,8 @@ public class Setting {
 	
 	public void setValString(String in){
 		this.sval = in;
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
 	}
 	
@@ -87,8 +87,8 @@ public class Setting {
 	
 	public void setValBoolean(boolean in){
 		this.bval = in;
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
 	}
 	
@@ -101,8 +101,8 @@ public class Setting {
 
 	public void setValDouble(double in){
 		this.dval = in;
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
 	}
 	

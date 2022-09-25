@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -16,16 +24,8 @@ import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.module.ModuleManager;
 import cn.KiesPro.settings.SettingsManager;
-import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
 
 
  /**
@@ -40,7 +40,6 @@ public class ClickGUI extends GuiScreen {
 	public static ArrayList<Panel> rpanels;
 	private ModuleButton mb = null;
 	public SettingsManager setmgr;
-	ModuleManager mm = new ModuleManager();
 	
 	/*
 	 * Konstrukor sollte nur einmal aufgerufen werden => in der MainMethode des eigenen Codes
@@ -71,10 +70,9 @@ public class ClickGUI extends GuiScreen {
 			ClickGUI.panels.add(new Panel(title, px, py, pwidth, pheight, false, this) {
 						@Override
 						public void setup() {
-							ModuleManager mm = new ModuleManager();
-							for (Module m : mm.modules) {
+							for (Module m : Client.instance.moduleManager.getModuleList()) {
 								if (!m.getCategory().equals(c))continue;
-								//this.Elements.add(new ModuleButton(m, this));
+								this.Elements.add(new ModuleButton(m, this));
 							}
 						}
 			});
@@ -114,18 +112,16 @@ public class ClickGUI extends GuiScreen {
 		}
 
 		
-		/*															*/ ScaledResolution s = new ScaledResolution(mc);
-  		/* DO NOT REMOVE											*/ GL11.glPushMatrix();
-		/* copyright HeroCode 2017									*/ GL11.glTranslated(s.getScaledWidth(), s.getScaledHeight(), 0);GL11.glScaled(0.5, 0.5, 0.5);
-		/* https://www.youtube.com/channel/UCJum3PIbnYvIfIEu05GL_yQ	*/ FontUtil.drawStringWithShadow("b"+"y"+ "H"+"e"+"r"+"o"+"C"+"o"+"d"+"e", -Minecraft.getMinecraft().fontRendererObj.getStringWidth("b"+"y"+ "H"+"e"+"r"+"o"+"C"+"o"+"d"+"e"), -Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xff11F86B);
-		/*															*/ GL11.glPopMatrix();
+		ScaledResolution s = new ScaledResolution(mc);
+  		GL11.glPushMatrix();
+		GL11.glTranslated(s.getScaledWidth(), s.getScaledHeight(), 0);GL11.glScaled(0.5, 0.5, 0.5);
+		FontUtil.drawStringWithShadow("b"+"y"+ "H"+"e"+"r"+"o"+"C"+"o"+"d"+"e", -Minecraft.getMinecraft().fontRendererObj.getStringWidth("b"+"y"+ "H"+"e"+"r"+"o"+"C"+"o"+"d"+"e"), -Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT, 0xff11F86B);
+		GL11.glPopMatrix();
+		//https://www.youtube.com/channel/UCJum3PIbnYvIfIEu05GL_yQ
 		
 		mb = null;
-		/*
-		 * �berpr�fen ob ein Button listening == true hat, wenn
-		 * ja, dann soll nicht mehr gesucht werden, nicht dass 
-		 * 1+ auf listening steht...
-		 */
+
+		
 		listen:
 		for (Panel p : panels) {
 			if (p != null && p.visible && p.extended && p.Elements != null
@@ -149,15 +145,15 @@ public class ClickGUI extends GuiScreen {
 				for (ModuleButton b : panel.Elements) {
 					if (b.extended && b.menuelements != null && !b.menuelements.isEmpty()) {
 						double off = 0;
-						Color temp = ColorUtil.getClickGUIColor().darker();
+						Color temp = ColorUtils.getClickGUIColor().darker();
 						int outlineColor = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 170).getRGB();
 						
 						for (Element e : b.menuelements) {
 							e.offset = off;
 							e.update();
-							if(Client.instance.settingsManager.getSettingByName(mm.getModule("ClickGUI"),"Design").getValString().equalsIgnoreCase("New")){
-								RenderUtil.drawRect(e.x, e.y, e.x + e.width + 2, e.y + e.height, outlineColor);
-							}
+//							if(Client.instance.settingsManager.getSettingByName("Design").getValString().equalsIgnoreCase("New")){
+//								Gui.drawRect(e.x, e.y, e.x + e.width + 2, e.y + e.height, outlineColor);
+//							}
 							e.drawScreen(mouseX, mouseY, partialTicks);
 							off += e.height;
 						}
@@ -313,10 +309,26 @@ public class ClickGUI extends GuiScreen {
 
 	@Override
 	public void initGui() {
+		/*
+		 * Start blur
+		 */
+		if (OpenGlHelper.shadersSupported && mc.getRenderViewEntity() instanceof EntityPlayer) {
+			if (mc.entityRenderer.theShaderGroup != null) {
+				mc.entityRenderer.theShaderGroup.deleteShaderGroup();
+			}
+			mc.entityRenderer.loadShader(new ResourceLocation("shaders/post/blur.json"));
+		}
 	}
 
 	@Override
 	public void onGuiClosed() {
+		/*
+		 * End blur 
+		 */
+		if (mc.entityRenderer.theShaderGroup != null) {
+			mc.entityRenderer.theShaderGroup.deleteShaderGroup();
+			mc.entityRenderer.theShaderGroup = null;
+		}
 		/*
 		 * Sliderfix
 		 */

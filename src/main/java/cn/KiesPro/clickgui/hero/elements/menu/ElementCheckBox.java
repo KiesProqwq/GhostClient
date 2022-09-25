@@ -6,7 +6,7 @@ import cn.KiesPro.clickgui.hero.elements.Element;
 import cn.KiesPro.clickgui.hero.elements.ModuleButton;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
 import net.minecraft.client.gui.Gui;
 
@@ -31,13 +31,13 @@ public class ElementCheckBox extends Element {
 	 * Rendern des Elements 
 	 */
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		Color temp = ColorUtil.getClickGUIColor();
+		Color temp = ColorUtils.getClickGUIColor();
 		int color = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 200).getRGB();
 		
 		/*
 		 * Die Box und Umrandung rendern
 		 */
-		RenderUtil.drawRect((double)this.x, (double)this.y, (double)(this.x + this.width), (double)(this.y + this.height), (int)-15066598);
+		RenderUtil.drawRect(x, y, x + width, y + height, 0xff1a1a1a);
 
 		/*
 		 * Titel und Checkbox rendern.

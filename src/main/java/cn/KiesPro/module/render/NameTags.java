@@ -24,9 +24,6 @@ public class NameTags extends Module {
 	
     @SubscribeEvent
     public void onPreRender(RenderPlayerEvent.Pre event) {
-		if (Client.instance.destructed) {
-			return;
-		}
         
         Scoreboard sb = event.entityPlayer.getWorldScoreboard();
         ScoreObjective sbObj = sb.getObjectiveInDisplaySlot(2);
@@ -34,6 +31,9 @@ public class NameTags extends Module {
         }
         if(event.entityPlayer.isDead)
             return;
+        
+        //bot给他remove了
+        
         //if(AntiBot.isServerBot(event.entityPlayer)) return;
         
         if(event.entityPlayer.isInvisible())

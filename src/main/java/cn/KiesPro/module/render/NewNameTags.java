@@ -17,6 +17,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NewNameTags extends Module {
+	
 
 	public NewNameTags() {
 		super("NewNameTags", "透视名字666", Category.RENDER);
@@ -25,9 +26,6 @@ public class NewNameTags extends Module {
 	
 	@SubscribeEvent
     public void onPreRender(RenderLivingEvent.Specials.Pre event) {
-		if (Client.instance.destructed) {
-			return;
-		}
 		
 		//EntityPlayer
 		if (event.entity instanceof EntityPlayer && event.entity != mc.thePlayer && event.entity.deathTime == 0) {

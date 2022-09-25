@@ -57,10 +57,6 @@ public class AimAssist extends Module {
 	@SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
 		
-		if (Client.instance.destructed) {
-			return;
-		}
-		
         if(!Utils.currentScreenMinecraft()){
             return;
         }
@@ -89,7 +85,6 @@ public class AimAssist extends Module {
                         double n = Utils.fovFromEntity(en);
                         if (n > 1.0D || n < -1.0D) {
                             double complimentSpeed = n*(ThreadLocalRandom.current().nextDouble(compliment.getValDouble() - 1.47328, compliment.getValDouble() + 2.48293)/100);
-                            double val2 = complimentSpeed + ThreadLocalRandom.current().nextDouble(speed.getValDouble() - 4.723847, speed.getValDouble());
                             float val = (float)(-(complimentSpeed + n / (101.0D - (float)ThreadLocalRandom.current().nextDouble(speed.getValDouble() - 4.723847, speed.getValDouble()))));
                             mc.thePlayer.rotationYaw += val;
                         }
@@ -120,7 +115,7 @@ public class AimAssist extends Module {
 
     public Entity getEnemy() {
         int fov2 = (int) (fov.getValDouble());
-        Iterator var2 = mc.theWorld.loadedEntityList.iterator();
+        Iterator<Entity> var2 = mc.theWorld.loadedEntityList.iterator();
 
         Entity en;
         do {

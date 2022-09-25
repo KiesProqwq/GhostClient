@@ -16,7 +16,7 @@ public class AutoMine extends Module {
     int i;
     
 	public AutoMine() {
-		super("AutoMine", "×Ô¶¯ÍÚ¾ò", Category.PLAYER);
+		super("AutoMine", "ï¿½Ô¶ï¿½ï¿½Ú¾ï¿½", Category.PLAYER);
 	}
 	
 	@Override
@@ -27,9 +27,6 @@ public class AutoMine extends Module {
     
 	@SubscribeEvent
 	public void onTick(PlayerTickEvent e) {
-		if (Client.instance.destructed) {
-			return;
-		}
 
         if (mc.objectMouseOver != null && mc.objectMouseOver.getBlockPos() != null && !mc.theWorld.isAirBlock(mc.objectMouseOver.getBlockPos()) && !Mouse.isButtonDown(0)) {
             i = mc.gameSettings.keyBindAttack.getKeyCode();

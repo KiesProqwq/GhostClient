@@ -11,9 +11,9 @@ public class ClickGUI extends Module {
 
 	public ClickGUI() {
 		super("ClickGUI", "Allows you to enable and disable modules", Category.RENDER);
-        Client.instance.settingsManager.rSetting(new Setting("ClickGui:GuiRed", (Module)this, 255.0, 0.0, 255.0, true));
-        Client.instance.settingsManager.rSetting(new Setting("ClickGui:GuiGreen", (Module)this, 0.0, 0.0, 255.0, true));
-        Client.instance.settingsManager.rSetting(new Setting("ClickGui:GuiBlue", (Module)this, 0.0, 0.0, 255.0, true));
+        Client.instance.settingsManager.rSetting(new Setting("GuiRed", (Module)this, 255.0, 0.0, 255.0, true));
+        Client.instance.settingsManager.rSetting(new Setting("GuiGreen", (Module)this, 0.0, 0.0, 255.0, true));
+        Client.instance.settingsManager.rSetting(new Setting("GuiBlue", (Module)this, 0.0, 0.0, 255.0, true));
         
 		this.setKey(Keyboard.KEY_RSHIFT);
 	}

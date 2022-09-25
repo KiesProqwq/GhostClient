@@ -4,7 +4,6 @@ import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -18,9 +17,6 @@ public class Velocity extends Module {
 	
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent e) {
-		if (Client.instance.destructed) {
-			return;
-		}
 		if (mc.thePlayer == null) {
 			return;
 		}

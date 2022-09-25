@@ -5,28 +5,24 @@ import cn.KiesPro.command.Command;
 
 public class Help extends Command {
 
-    @Override
-    public String getName() {
-        return "help";
+    public Help() {
+        super("Help", "?", " ", "help");
     }
 
     @Override
-    public String getDesc() {
-        return "Gives you the syntax of all commands and what they do.";
-    }
-
-    @Override
-    public String getSyntax() {
-        return ".help";
-    }
-
-    @Override
-    public void execute(String[] args) {
-        if(args.length != 1) {
-            for(Command c : Client.instance.commandManager.getCommands()) {
-                msg(c.getSyntax() + " §7- " + c.getDesc());
-            }
-        }
-
+    public void onCommand(String[] args, String command) {
+        Client.instance.sendMessage("§7§m----------------------------------------");
+        Client.instance.sendMessage("§c§lKies §7- §f" + Client.instance.CLIENT_VERSION);
+        Client.instance.sendMessage("§7§oDeveloped by KiesPro");
+        Client.instance.sendMessage(" ");
+        Client.instance.sendMessage("§c§lCommands:");
+        Client.instance.sendMessage("§c.hide §7- Hides a module by name");
+        //Client.instance.sendMessage("§c.vclip §7- Clips you down or up");
+        Client.instance.sendMessage("§c.bind §7- Binds a module");
+        //Client.instance.sendMessage("§c.rename §7- Changes the client name");
+        //Client.instance.sendMessage("§c.name §7- Copies your Minecraft username to clipboard");
+        Client.instance.sendMessage("§c.toggle §7- Toggles a module");
+        //Client.instance.sendMessage("§c.hclip §7- Clips you horizontal");
+        Client.instance.sendMessage("§7§m----------------------------------------");
     }
 }

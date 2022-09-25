@@ -1,6 +1,8 @@
 package cn.KiesPro.injection.mixins.client.renderer;
 
 import cn.KiesPro.Client;
+import cn.KiesPro.module.Module;
+import cn.KiesPro.module.combat.Reach;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -9,11 +11,16 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.*;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
+
+import java.util.List;
+import java.util.Objects;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -21,6 +28,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import com.google.common.base.Predicates;
 
 
 @Mixin(EntityRenderer.class)
@@ -118,9 +127,4 @@ public abstract class MixinEntityRenderer {
             callbackInfo.cancel();
         }
     }
-    
-    @Overwrite
-    public void getMouseOver(float p_getMouseOver_1_) {
-
-        }
-    }
+}

@@ -6,11 +6,10 @@ import cn.KiesPro.clickgui.hero.elements.Element;
 import cn.KiesPro.clickgui.hero.elements.ModuleButton;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.util.MathHelper;
-
 
 /**
  *  Made by HeroCode
@@ -39,7 +38,7 @@ public class ElementSlider extends Element {
 		String displayval = "" + Math.round(set.getValDouble() * 100D)/ 100D;
 		boolean hoveredORdragged = isSliderHovered(mouseX, mouseY) || dragging;
 		
-		Color temp = ColorUtil.getClickGUIColor();
+		Color temp = ColorUtils.getClickGUIColor();
 		int color = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), hoveredORdragged ? 250 : 200).getRGB();
 		int color2 = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), hoveredORdragged ? 255 : 230).getRGB();
 		

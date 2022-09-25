@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /*
  *由于哥们是个懒熊所以火速搞了个AutoGG来刷Karma(好像拼错了)
- * 
  */
 public class AutoGG extends Module {
 	

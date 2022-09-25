@@ -2,12 +2,11 @@ package cn.KiesPro.clickgui.hero.elements.menu;
 
 import java.awt.Color;
 
-import cn.KiesPro.Client;
 import cn.KiesPro.clickgui.hero.elements.Element;
 import cn.KiesPro.clickgui.hero.elements.ModuleButton;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.hero.ColorUtil;
+import cn.KiesPro.utils.color.ColorUtils;
 import cn.KiesPro.utils.hero.FontUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -23,6 +22,9 @@ public class ElementComboBox extends Element {
 	/*
 	 * Konstrukor
 	 */
+	
+	private int modeIndex;
+	
 	public ElementComboBox(ModuleButton iparent, Setting iset) {
 		parent = iparent;
 		set = iset;
@@ -33,7 +35,7 @@ public class ElementComboBox extends Element {
 	 * Rendern des Elements
 	 */
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		Color temp = ColorUtil.getClickGUIColor();
+		Color temp = ColorUtils.getClickGUIColor();
 		int color = new Color(temp.getRed(), temp.getGreen(), temp.getBlue(), 150).getRGB();
 		
 		/*
@@ -90,18 +92,21 @@ public class ElementComboBox extends Element {
 			 */
 			if (!comboextended)return false;
 			double ay = y + 15;
-			for (String slcd : set.getOptions()) {
 				if (mouseX >= x && mouseX <= x + width && mouseY >= ay && mouseY <= ay + FontUtil.getFontHeight() + 2) {
+					int maxIndex = set.getOptions().size() - 1;
+					Minecraft.getMinecraft().thePlayer.playSound("tile.piston.in", 20.0F, 20.0F);
 					
-					if(clickgui != null && clickgui.setmgr != null)
-						
-					//clickgui.setmgr.getSettingByName(set.getName()).setValString(slcd.toLowerCase());
-					//idk
-						
+					//if(clickgui != null && clickgui.setmgr != null)
+					//clickgui.setmgr.getSettingByName(, set.getName()).setValString(slcd.toLowerCase());
+					if(modeIndex + 1 > maxIndex)
+						modeIndex = 0;
+					else
+						modeIndex++;
+
+					set.setValString(set.getOptions().get(modeIndex));
 					return true;
 				}
 				ay += FontUtil.getFontHeight() + 2;
-			}
 		}
 
 		return super.mouseClicked(mouseX, mouseY, mouseButton);

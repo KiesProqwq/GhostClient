@@ -2,6 +2,9 @@ package cn.KiesPro.utils.color;
 
 import java.awt.Color;
 
+import cn.KiesPro.Client;
+import cn.KiesPro.module.Module;
+
 public class ColorUtils {
 
 	public static Color rainbow() {
@@ -28,4 +31,9 @@ public class ColorUtils {
     public static int getColor(int r, int g, int b) {
         return 255 << 24 | r << 16 | g << 8 | b;
     }
+    
+	public static Color getClickGUIColor(){
+		Module clickgui = Client.instance.moduleManager.getModule("ClickGui");
+		return new Color((int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiRed").getValDouble(), (int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiGreen").getValDouble(), (int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiBlue").getValDouble());
+	}
 }

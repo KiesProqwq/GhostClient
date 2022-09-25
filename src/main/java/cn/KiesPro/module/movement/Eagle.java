@@ -8,9 +8,11 @@ import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.MathUtils;
 import cn.KiesPro.utils.TimerUtils;
+import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.ContainerChest;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -25,14 +27,11 @@ public class Eagle extends Module {
 		registerSetting(new Setting("OnSneakKey", this, true));
 		registerSetting(new Setting("Min Delay", this, 500D, 0D, 1500D, true));
 		registerSetting(new Setting("Max Delay", this, 500D, 0D, 1500D, true));
-		registerSetting(new Setting("Debug", this, true));
+		//registerSetting(new Setting("Debug", this, true));
 	}
 	
 	@SubscribeEvent
 	public void onTick(TickEvent e) {
-		if (Client.instance.destructed) {
-			return;
-		}
 		
 		double max = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();
 		double min = Client.instance.settingsManager.getSettingByName(this, "Min Delay").getValDouble();
@@ -47,25 +46,28 @@ public class Eagle extends Module {
 		if (Client.instance.moduleManager.getModule("Eagle").isToggled()) {
 			
 		double delay = MathUtils.randomNumber(max, min);
+		int shiftkey = mc.gameSettings.keyBindSneak.getKeyCode();
+		
+		if (mc.currentScreen != null && !(mc.currentScreen instanceof GuiChat)) return;
 		
 		if (mc.thePlayer != null && mc.theWorld != null) {
-			if (Client.instance.settingsManager.getSettingByName(this, "OnSneakKey").getValBoolean() && mc.currentScreen != null && !Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode())) {
-                KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
+			if (Client.instance.settingsManager.getSettingByName(this, "OnSneakKey").getValBoolean() && !Keyboard.isKeyDown(shiftkey)) {
+                KeyBinding.setKeyBindState(shiftkey, false);
 			} else {
 				if (mc.theWorld.getBlockState((new BlockPos(mc.thePlayer)).add(0, -1, 0)).getBlock() == Blocks.air && mc.thePlayer.onGround) {
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), true);
+                    KeyBinding.setKeyBindState(shiftkey, true);
                     
                     //if (Client.instance.settingsManager.getSettingByName(this, "Debug").getValBoolean()) {Client.instance.sendMessage(delay); }
                     	
                     this.sneakTimer.reset();
                 } else if (this.sneakTimer.hasReached(delay)) {
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode()));
+                    KeyBinding.setKeyBindState(shiftkey, Keyboard.isKeyDown(shiftkey));
                 } else {
-                    KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
+                    KeyBinding.setKeyBindState(shiftkey, false);
                 }
 			}
 		} else {
-			KeyBinding.setKeyBindState(mc.gameSettings.keyBindSneak.getKeyCode(), false);
+			KeyBinding.setKeyBindState(shiftkey, false);
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package cn.KiesPro.module;
 
 import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventManager;
 import cn.KiesPro.settings.Setting;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
@@ -13,7 +14,7 @@ public class Module {
 	private int key;
 	private Category category;
 	private boolean toggled;
-	public boolean visible = true;
+	private boolean visible = true;
 	
 	public Module(String name, String description, Category category) {
 		super();
@@ -38,9 +39,17 @@ public class Module {
 
 	public void setKey(int key) {
 		this.key = key;
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
 	}
 
 	public boolean isToggled() {
@@ -50,14 +59,13 @@ public class Module {
 	public void setToggled(boolean toggled) {
 		this.toggled = toggled;
 		
-
 		if (this.toggled) {
 			this.onEnable();
 		} else {
 			this.onDisable();
 		}
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
 	}
 	
@@ -69,17 +77,19 @@ public class Module {
 		} else {
 			this.onDisable();
 		}
-		if (Client.instance.saveLoad != null) {
-			Client.instance.saveLoad.save();
+		if (Client.instance.configmanager != null) {
+			Client.instance.configmanager.save();
 		}
 	}
 	
 	public void onEnable() {
 		MinecraftForge.EVENT_BUS.register(this);
+		EventManager.register(this);
 	}
 	
 	public void onDisable() {
 		MinecraftForge.EVENT_BUS.unregister(this);
+		EventManager.unregister(this);
 	}
 	
 	public String getName() {

@@ -30,21 +30,24 @@ public class AutoTool extends Module {
 		this.registerSetting(hotkeyBack = new Setting("Hotkey back", this, true));
 		this.registerSetting(Sword = new Setting("Sword", this, true));
 		this.registerSetting(doDelay = new Setting("Random delay", this, true));
-		this.registerSetting(minDelay = new Setting("Min delay", this, 25, 0, 600, true));
-		this.registerSetting(maxDelay = new Setting("Max delay", this, 100, 0, 600, true));
+		this.registerSetting(minDelay = new Setting("Min Delay", this, 25, 0, 600, true));
+		this.registerSetting(maxDelay = new Setting("Max Delay", this, 100, 0, 600, true));
 	}
 
 	@SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event) {
-		if (Client.instance.destructed) {
-			return;
-		}
 
 		if (!Utils.isPlayerInGame() || mc.currentScreen != null)
 			return;
 
-		//////// System.out.println(mc.currentScreen);
-
+		double max = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();
+		double min = Client.instance.settingsManager.getSettingByName(this, "Min Delay").getValDouble();
+		
+		if (min >= max) {
+			Client.instance.settingsManager.getSettingByName(this, "Max Delay").setValDouble(min + 1);
+			min = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();
+		}
+		
 		if (Mouse.isButtonDown(0)) {
 
 			BlockPos lookingAtBlock = mc.objectMouseOver.getBlockPos();
@@ -88,16 +91,6 @@ public class AutoTool extends Module {
 		} else {
 			if (mining)
 				finishMining();
-		}
-	}
-
-	public static void hotkeyToPickAxe() {
-		for (int slot = 0; slot <= 8; slot++) {
-			ItemStack itemInSlot = mc.thePlayer.inventory.getStackInSlot(slot);
-			if (itemInSlot != null && itemInSlot.getItem() instanceof ItemPickaxe) {
-				BlockPos p = mc.objectMouseOver.getBlockPos();
-				Block bl = mc.theWorld.getBlockState(p).getBlock();
-			}
 		}
 	}
 

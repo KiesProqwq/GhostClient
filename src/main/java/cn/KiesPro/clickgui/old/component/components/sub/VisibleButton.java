@@ -36,8 +36,8 @@ public class VisibleButton extends Component { // Remove this class if you don't
 		Gui.drawRect(parent.parent.getX(), parent.parent.getY() + offset, parent.parent.getX() + 2, parent.parent.getY() + offset + 12, 0xFF111111);
 		GL11.glPushMatrix();
 		GL11.glScalef(0.5f,0.5f, 0.5f);
-		Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("Visible: " + mod.visible, (parent.parent.getX() + 7) * 2, (parent.parent.getY() + offset + 2) * 2 + 5, -1);
-		GL11.glPopMatrix(); //													    mod.visible is a public boolean variable in the Module.java class. If it's == false, the mod won't show up in the ArrayList
+		Minecraft.getMinecraft().fontRendererObj.drawStringWithShadow("Visible: " + mod.isVisible(), (parent.parent.getX() + 7) * 2, (parent.parent.getY() + offset + 2) * 2 + 5, -1);
+		GL11.glPopMatrix(); //mod.visible is a public boolean variable in the Module.java class. If it's == false, the mod won't show up in the ArrayList
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class VisibleButton extends Component { // Remove this class if you don't
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
 		if(isMouseOnButton(mouseX, mouseY) && button == 0 && this.parent.open) {
-			mod.visible = (!mod.visible);
+			mod.setVisible((!mod.isVisible()));
 		}
 	}
 	
