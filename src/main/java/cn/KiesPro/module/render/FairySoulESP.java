@@ -10,7 +10,7 @@ import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.FairySoulUtil;
 import cn.KiesPro.utils.RenderUtil;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -50,7 +50,7 @@ public class FairySoulESP extends Module {
 	
     @SubscribeEvent
 	public void onRender3D(RenderWorldLastEvent e) {
-        if(!Utils.isPlayerInGame() && Client.instance.moduleManager.getModule("FairySoulESP").isToggled()) {
+        if(!RavenUtils.isPlayerInGame() && Client.instance.moduleManager.getModule("FairySoulESP").isToggled()) {
             for (int i = 0; i < loopList.size(); ++i) {
                 double z;
                 double y;

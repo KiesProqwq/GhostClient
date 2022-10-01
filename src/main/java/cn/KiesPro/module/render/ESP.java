@@ -11,7 +11,7 @@ import cn.KiesPro.module.combat.AntiBot;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.HUDUtils;
 import cn.KiesPro.utils.color.ColorUtils;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
@@ -52,7 +52,7 @@ public class ESP extends Module {
 
     @SubscribeEvent
     public void onRenderWorldLast(RenderWorldLastEvent event) {
-        if(!Utils.currentScreenMinecraft()){
+        if(!RavenUtils.currentScreenMinecraft()){
             return;
         }
 

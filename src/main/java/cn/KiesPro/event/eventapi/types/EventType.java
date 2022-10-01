@@ -6,16 +6,15 @@ package cn.KiesPro.event.eventapi.types;
  * @author DarkMagician6
  * @since August 27, 2013
  */
-public class EventType {
+public enum EventType {
 
     /**
      * Used to define the type of a typed event.
      */
-    public static final byte
-            PRE = 0,
-            ON = 1,
-            POST = 2,
-            SEND = 3,
-            RECIEVE = 4;
+    PRE,
+    ON,
+    POST,
+    SEND,
+    RECIEVE
 
 }

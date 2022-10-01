@@ -18,7 +18,7 @@ import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,10 +57,10 @@ public class AimAssist extends Module {
 	@SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
 		
-        if(!Utils.currentScreenMinecraft()){
+        if(!RavenUtils.currentScreenMinecraft()){
             return;
         }
-        if(!Utils.isPlayerInGame()) return;
+        if(!RavenUtils.isPlayerInGame()) return;
 
         if (breakBlocks.isEnabled() && mc.objectMouseOver != null) {
             BlockPos p = mc.objectMouseOver.getBlockPos();
@@ -73,16 +73,16 @@ public class AimAssist extends Module {
         }
 
 
-        if (!weaponOnly.isEnabled() || Utils.isPlayerHoldingWeapon()) {
+        if (!weaponOnly.isEnabled() || RavenUtils.isPlayerHoldingWeapon()) {
 
             if (!clickAim.isEnabled() || Mouse.isButtonDown(0)) {
                 Entity en = this.getEnemy();
                 if (en != null) {
 
                     if (blatantMode.isEnabled()) {
-                        Utils.aim(en, 0.0F, false);
+                        RavenUtils.aim(en, 0.0F, false);
                     } else {
-                        double n = Utils.fovFromEntity(en);
+                        double n = RavenUtils.fovFromEntity(en);
                         if (n > 1.0D || n < -1.0D) {
                             double complimentSpeed = n*(ThreadLocalRandom.current().nextDouble(compliment.getValDouble() - 1.47328, compliment.getValDouble() + 2.48293)/100);
                             float val = (float)(-(complimentSpeed + n / (101.0D - (float)ThreadLocalRandom.current().nextDouble(speed.getValDouble() - 4.723847, speed.getValDouble()))));
@@ -134,7 +134,7 @@ public class AimAssist extends Module {
                         } while(en.isDead != false);
                     } while(!Inv.isEnabled() && en.isInvisible());
                 } while((double)mc.thePlayer.getDistanceToEntity(en) > distance.getValDouble());
-        	} while(!blatantMode.isEnabled() && !Utils.fov(en, (float)fov2));
+        	} while(!blatantMode.isEnabled() && !RavenUtils.fov(en, (float)fov2));
 
         if (en instanceof EntityPlayer){
             if (Players.isEnabled()) {

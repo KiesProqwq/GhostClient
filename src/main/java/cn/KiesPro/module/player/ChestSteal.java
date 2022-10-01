@@ -8,7 +8,7 @@ import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.MathUtils;
 import cn.KiesPro.utils.TimerUtils;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
@@ -37,7 +37,7 @@ public class ChestSteal extends Module {
 	public void onUpdate(EventUpdate event) {
 		if (Client.instance.moduleManager.getModule("ChestSteal").isToggled()) {
 
-			if (!Utils.isPlayerInGame())
+			if (!RavenUtils.isPlayerInGame())
 				return;
 
 			double max = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();

@@ -150,7 +150,131 @@ public class RenderUtil {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
-      
+    
+    public static void drawBorderedRect(float x, float y, float x1, float y1, float width, int internalColor, int borderColor) {
+        RenderUtil.enableGL2D();
+        RenderUtil.drawRect(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GL11.glPushMatrix();
+        RenderUtil.drawRect(x + width, y, x1 - width, y + width, borderColor);
+        RenderUtil.drawRect(x, y, x + width, y1, borderColor);
+        RenderUtil.drawRect(x1 - width, y, x1, y1, borderColor);
+        RenderUtil.drawRect(x + width, y1 - width, x1 - width, y1, borderColor);
+        GL11.glPopMatrix();
+        RenderUtil.disableGL2D();
+    }
+    public static void drawOutlinedRoundedRect(float x, float y, float width, float height, float radius, float linewidth, int color) {
+        int i;
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        double x1 = x + width;
+        double y1 = y + height;
+        float f = (float)(color >> 24 & 0xFF) / 255.0f;
+        float f1 = (float)(color >> 16 & 0xFF) / 255.0f;
+        float f2 = (float)(color >> 8 & 0xFF) / 255.0f;
+        float f3 = (float)(color & 0xFF) / 255.0f;
+        GL11.glPushAttrib(0);
+        GL11.glScaled(0.5, 0.5, 0.5);
+        x *= 2.0f;
+        y *= 2.0f;
+        x1 *= 2.0;
+        y1 *= 2.0;
+        GL11.glLineWidth(linewidth);
+        GL11.glDisable(3553);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glEnable(2848);
+        GL11.glBegin(2);
+        for (i = 0; i <= 90; i += 3) {
+            GL11.glVertex2d((double)(x + radius) + Math.sin((double)i * Math.PI / 180.0) * (double)(radius * -1.0f), (double)(y + radius) + Math.cos((double)i * Math.PI / 180.0) * (double)(radius * -1.0f));
+        }
+        for (i = 90; i <= 180; i += 3) {
+            GL11.glVertex2d((double)(x + radius) + Math.sin((double)i * Math.PI / 180.0) * (double)(radius * -1.0f), y1 - (double)radius + Math.cos((double)i * Math.PI / 180.0) * (double)(radius * -1.0f));
+        }
+        for (i = 0; i <= 90; i += 3) {
+            GL11.glVertex2d(x1 - (double)radius + Math.sin((double)i * Math.PI / 180.0) * (double)radius, y1 - (double)radius + Math.cos((double)i * Math.PI / 180.0) * (double)radius);
+        }
+        for (i = 90; i <= 180; i += 3) {
+            GL11.glVertex2d(x1 - (double)radius + Math.sin((double)i * Math.PI / 180.0) * (double)radius, (double)(y + radius) + Math.cos((double)i * Math.PI / 180.0) * (double)radius);
+        }
+        GL11.glEnd();
+        GL11.glEnable(3553);
+        GL11.glDisable(2848);
+        GL11.glEnable(3553);
+        GL11.glScaled(2.0, 2.0, 2.0);
+        GL11.glPopAttrib();
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+    
+    public static void drawRoundRect(double xPosition, double yPosition, double endX, double endY, float radius, int color) {
+    	double width = endX - xPosition;
+    	double height = endY - yPosition;
+    	drawRect(xPosition + radius, yPosition + radius, xPosition + width - radius, yPosition + height - radius, color);
+    	drawRect(xPosition, yPosition + radius, xPosition + radius, yPosition + height - radius, color);
+    	drawRect(xPosition + width - radius, yPosition + radius, xPosition + width, yPosition + height - radius, color);
+    	drawRect(xPosition + radius, yPosition, xPosition + width - radius, yPosition + radius, color);
+    	drawRect(xPosition + radius, yPosition + height - radius, xPosition + width - radius, yPosition + height, color);
+    	drawFilledCircle(xPosition + radius, yPosition + radius, radius, color, 1);
+    	drawFilledCircle(xPosition + radius, yPosition + height - radius, radius, color, 2);
+    	drawFilledCircle(xPosition + width - radius, yPosition + radius, radius, color, 3);
+    	drawFilledCircle(xPosition + width - radius, yPosition + height - radius, radius, color, 4);
+}
+    
+    public static void drawFilledCircle(double x, double y, double r, int c, int id) {
+        float f = (float) (c >> 24 & 0xff) / 255F;
+        float f1 = (float) (c >> 16 & 0xff) / 255F;
+        float f2 = (float) (c >> 8 & 0xff) / 255F;
+        float f3 = (float) (c & 0xff) / 255F;
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glBegin(GL11.GL_POLYGON);
+        if (id == 1) {
+        	GL11.glVertex2d(x, y);
+            for (int i = 0; i <= 90; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 2) {
+        	GL11.glVertex2d(x, y);
+            for (int i = 90; i <= 180; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 3) {
+        	GL11.glVertex2d(x, y);
+            for (int i = 270; i <= 360; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else if (id == 4) {
+        	GL11. glVertex2d(x, y);
+            for (int i = 180; i <= 270; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2d(x - x2, y - y2);
+            }
+        } else {
+            for (int i = 0; i <= 360; i++) {
+                double x2 = Math.sin((i * 3.141526D / 180)) * r;
+                double y2 = Math.cos((i * 3.141526D / 180)) * r;
+                GL11.glVertex2f((float) (x - x2), (float) (y - y2));
+            }
+        }
+        GL11.glEnd();
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_BLEND);
+    }
+    
+    public static void drawBorderedRoundedRect(float x, float y, float width, float height, float radius, float linewidth, int insideC, int borderC) {
+        RenderUtil.drawRoundRect(x, y, x + width, y + height, radius, insideC);
+    	drawRect(radius, linewidth, height, insideC, borderC);
+        RenderUtil.drawOutlinedRoundedRect(x, y, width, height, radius, linewidth, borderC);
+    }
     /*
      * Fans 3.1-beta ChestESP util 
      */

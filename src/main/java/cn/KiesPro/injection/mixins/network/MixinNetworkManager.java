@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import cn.KiesPro.event.eventapi.EventManager;
 import cn.KiesPro.event.events.EventReceivePacket;
-import cn.KiesPro.event.events.EventSendPacket;
+import cn.KiesPro.event.nouse.EventSendPacket;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;

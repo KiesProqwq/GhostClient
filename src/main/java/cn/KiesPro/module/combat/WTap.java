@@ -11,7 +11,7 @@ import org.lwjgl.input.Mouse;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -37,14 +37,14 @@ public class WTap extends Module {
     }
 
     public void guiUpdate() {
-        Utils.correctSliders(minActionTicks, maxActionTicks);
-        Utils.correctSliders(minOnceEvery, maxOnceEvery);
+        RavenUtils.correctSliders(minActionTicks, maxActionTicks);
+        RavenUtils.correctSliders(minOnceEvery, maxOnceEvery);
     }
 
 
     @SubscribeEvent
     public void onTick(TickEvent.RenderTickEvent e) {
-        if(!Utils.isPlayerInGame())
+        if(!RavenUtils.isPlayerInGame())
             return;
 
         if(comboing) {

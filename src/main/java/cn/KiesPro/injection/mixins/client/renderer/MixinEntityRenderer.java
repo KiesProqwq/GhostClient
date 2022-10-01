@@ -1,6 +1,8 @@
 package cn.KiesPro.injection.mixins.client.renderer;
 
 import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventManager;
+import cn.KiesPro.event.events.EventRender3D;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.module.combat.Reach;
 import net.minecraft.block.Block;
@@ -22,10 +24,12 @@ import net.minecraftforge.common.MinecraftForge;
 import java.util.List;
 import java.util.Objects;
 
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -126,5 +130,12 @@ public abstract class MixinEntityRenderer {
         if (Client.instance.moduleManager.getModule("NoHurtCam").isToggled()) {
             callbackInfo.cancel();
         }
+    }
+    
+    @Inject(method = "renderWorldPass", at =@At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;disableFog()V", shift = Shift.AFTER))
+    private void eventRender3D(int pass, float partialTicks, long finishTimeNano, CallbackInfo callbackInfo) {
+    	EventRender3D eventRender3D = new EventRender3D(partialTicks);
+        EventManager.call(eventRender3D);
+        GL11.glColor3f(1.0F, 1.0F, 1.0F);
     }
 }

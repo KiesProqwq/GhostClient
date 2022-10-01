@@ -8,7 +8,7 @@ import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.MathUtils;
 import cn.KiesPro.utils.TimerUtils;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -150,7 +150,7 @@ public class Clicker extends Module {
 
     @SubscribeEvent
     public void onRenderTick(TickEvent.RenderTickEvent ev) {
-        if(!Utils.currentScreenMinecraft())
+        if(!RavenUtils.currentScreenMinecraft())
             return;
 
         if(clickEvent.getValString() != "RENDER") {return;}
@@ -165,7 +165,7 @@ public class Clicker extends Module {
 
     @SubscribeEvent
     public void onPlayerTick(TickEvent.PlayerTickEvent ev) {
-        if(!Utils.currentScreenMinecraft())
+        if(!RavenUtils.currentScreenMinecraft())
             return;
 
         if(clickEvent.getValString() != "TICK") {return;}
@@ -179,7 +179,7 @@ public class Clicker extends Module {
     }
 
     private void skidClick(TickEvent.RenderTickEvent er, TickEvent.PlayerTickEvent e) {
-        if (!Utils.isPlayerInGame())
+        if (!RavenUtils.isPlayerInGame())
             return;
 
         guiUpdate();
@@ -197,7 +197,7 @@ public class Clicker extends Module {
         // Uhh left click only, mate
         if (Mouse.isButtonDown(0) && leftClick.isEnabled()) {
             if(breakBlock()) return;
-            if (weaponOnly.isEnabled() && !Utils.isPlayerHoldingWeapon()) {
+            if (weaponOnly.isEnabled() && !RavenUtils.isPlayerHoldingWeapon()) {
                 return;
             }
             if (jitterLeft.getValDouble() > 0.0D) {
@@ -230,11 +230,11 @@ public class Clicker extends Module {
                 KeyBinding.setKeyBindState(key, true);
 
                 KeyBinding.onTick(key);
-                Utils.setMouseButtonState(0, true);
+                RavenUtils.setMouseButtonState(0, true);
             } else if (System.currentTimeMillis() - leftHold > leftHoldLength * 1000) {
                 KeyBinding.setKeyBindState(mc.gameSettings.keyBindAttack.getKeyCode(), false);
 
-                Utils.setMouseButtonState(0, false);
+                RavenUtils.setMouseButtonState(0, false);
             }
         }
         //we cheat in a block game ft. right click
@@ -293,7 +293,7 @@ public class Clicker extends Module {
 
             //Mouse.poll();
             if (leftClick.isEnabled() && Mouse.isButtonDown(0)) {
-                if (weaponOnly.isEnabled() && !Utils.isPlayerHoldingWeapon()) {
+                if (weaponOnly.isEnabled() && !RavenUtils.isPlayerHoldingWeapon()) {
                     return;
                 }
                 this.leftClickExecute(mc.gameSettings.keyBindAttack.getKeyCode());
@@ -325,9 +325,9 @@ public class Clicker extends Module {
     }
 
     public void guiUpdate() {
-        Utils.correctSliders(leftMinCPS, leftMaxCPS);
-        Utils.correctSliders(rightMinCPS, rightMaxCPS);
-        Utils.correctSliders(breakBlocksMin, breakBlocksMax);
+        RavenUtils.correctSliders(leftMinCPS, leftMaxCPS);
+        RavenUtils.correctSliders(rightMinCPS, rightMaxCPS);
+        RavenUtils.correctSliders(breakBlocksMin, breakBlocksMax);
 
     }
 
@@ -454,8 +454,8 @@ public class Clicker extends Module {
             if (System.currentTimeMillis() > this.rightj) {
                 KeyBinding.setKeyBindState(key, true);
                 KeyBinding.onTick(key);
-                Utils.setMouseButtonState(1, false);
-                Utils.setMouseButtonState(1, true);
+                RavenUtils.setMouseButtonState(1, false);
+                RavenUtils.setMouseButtonState(1, true);
                 this.genRightTimings();
             } else if (System.currentTimeMillis() > this.righti) {
                 KeyBinding.setKeyBindState(key, false);
@@ -468,7 +468,7 @@ public class Clicker extends Module {
     }
 
     public void genLeftTimings() {
-        double clickSpeed = Utils.ranModuleVal(leftMinCPS, leftMaxCPS, this.rand) + 0.4D * this.rand.nextDouble();
+        double clickSpeed = RavenUtils.ranModuleVal(leftMinCPS, leftMaxCPS, this.rand) + 0.4D * this.rand.nextDouble();
         long delay = (int)Math.round(1000.0D / clickSpeed);
         if (System.currentTimeMillis() > this.leftk) {
             if (!this.leftn && this.rand.nextInt(100) >= 85) {
@@ -498,7 +498,7 @@ public class Clicker extends Module {
     }
 
     public void genRightTimings() {
-        double clickSpeed = Utils.ranModuleVal(rightMinCPS, rightMaxCPS, this.rand) + 0.4D * this.rand.nextDouble();
+        double clickSpeed = RavenUtils.ranModuleVal(rightMinCPS, rightMaxCPS, this.rand) + 0.4D * this.rand.nextDouble();
         long delay = (int)Math.round(1000.0D / clickSpeed);
         if (System.currentTimeMillis() > this.rightk) {
             if (!this.rightn && this.rand.nextInt(100) >= 85) {

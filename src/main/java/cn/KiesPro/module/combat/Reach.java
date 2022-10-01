@@ -3,7 +3,7 @@ package cn.KiesPro.module.combat;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -89,7 +89,7 @@ public class Reach extends Module {
 
     @SubscribeEvent
     public void onMouseEvent(MouseEvent event) {
-        if(!Utils.currentScreenMinecraft())
+        if(!RavenUtils.currentScreenMinecraft())
             return;
 
         if (!throughBlocks.isEnabled() && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

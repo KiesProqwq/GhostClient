@@ -5,7 +5,7 @@ import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.MathUtils;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -21,7 +21,7 @@ public class FPSSpoof extends Module {
 	
 	@SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {		
-        if (!Utils.isPlayerInGame() || mc.currentScreen != null)
+        if (!RavenUtils.isPlayerInGame() || mc.currentScreen != null)
             return;
         
     	double max = Client.instance.settingsManager.getSettingByName(this, "MaxFPS").getValDouble();

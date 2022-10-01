@@ -8,7 +8,7 @@ import cn.KiesPro.event.events.EventUpdate;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class HitBox extends Module {
     
     @EventTarget
     public void onUpdate(EventUpdate event) {
-        if(!Utils.currentScreenMinecraft())
+        if(!RavenUtils.currentScreenMinecraft())
             return;
 
         List loadedEntityList = mc.theWorld.loadedEntityList;

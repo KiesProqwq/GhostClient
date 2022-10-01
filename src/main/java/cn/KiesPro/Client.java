@@ -4,13 +4,14 @@ import org.lwjgl.input.Keyboard;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
-import cn.KiesPro.clickgui.old.ClickGui;
 import cn.KiesPro.command.CommandManager;
 import cn.KiesPro.file.ClickGuiFile;
 import cn.KiesPro.file.ConfigManager;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.module.ModuleManager;
 import cn.KiesPro.settings.SettingsManager;
+import cn.KiesPro.ui.clickgui.old.ClickGui;
+import cn.KiesPro.ui.font.FontLoaders;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
@@ -21,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 public class Client
 {
 	public String CLIENT_NAME = "Kies";
-	public String CLIENT_VERSION = "1.6";
+	public String CLIENT_VERSION = "1.7";
 	
 	public String prefix = "§f[" + ChatFormatting.RED + "K§f" + "]";
 	//Minecraft Instance
@@ -32,9 +33,10 @@ public class Client
     public ModuleManager moduleManager;
     public SettingsManager settingsManager;
     public CommandManager commandManager;
+    public FontLoaders fontManager;
     //ClickGUI
     public ClickGui oldClickGui;
-    public cn.KiesPro.clickgui.hero.ClickGUI heroGui;
+    public cn.KiesPro.ui.clickgui.hero.ClickGUI heroGui;
     //File
     public ClickGuiFile saveclickgui;
     public ConfigManager configmanager;

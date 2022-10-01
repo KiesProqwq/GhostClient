@@ -4,7 +4,7 @@ import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.raven.Utils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.init.Blocks;
@@ -37,7 +37,7 @@ public class AutoTool extends Module {
 	@SubscribeEvent
 	public void onRenderWorldLast(RenderWorldLastEvent event) {
 
-		if (!Utils.isPlayerInGame() || mc.currentScreen != null)
+		if (!RavenUtils.isPlayerInGame() || mc.currentScreen != null)
 			return;
 
 		double max = Client.instance.settingsManager.getSettingByName(this, "Max Delay").getValDouble();
@@ -55,7 +55,7 @@ public class AutoTool extends Module {
 				Block stateBlock = mc.theWorld.getBlockState(lookingAtBlock).getBlock();
 				if (stateBlock != Blocks.air && !(stateBlock instanceof BlockLiquid) && stateBlock instanceof Block) {
 					if (!mining) {
-						previousSlot = Utils.getCurrentPlayerSlot();
+						previousSlot = RavenUtils.getCurrentPlayerSlot();
 						mining = true;
 					}
 					int index = -1;
@@ -84,7 +84,7 @@ public class AutoTool extends Module {
 
 					if (index == -1 || speed <= 1.1 || speed == 0) {
 					} else {
-						Utils.hotkeyToSlot(index);
+						RavenUtils.hotkeyToSlot(index);
 					}
 				}
 			} 
@@ -96,7 +96,7 @@ public class AutoTool extends Module {
 
 	public void finishMining() {
 		if (hotkeyBack.isEnabled()) {
-			Utils.hotkeyToSlot(previousSlot);
+			RavenUtils.hotkeyToSlot(previousSlot);
 		}
 		justFinishedMining = false;
 		mining = false;

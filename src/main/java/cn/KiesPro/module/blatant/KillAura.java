@@ -6,15 +6,21 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import cn.KiesPro.Client;
+import cn.KiesPro.event.eventapi.EventTarget;
+import cn.KiesPro.event.events.EventPreUpdate;
+import cn.KiesPro.event.events.EventUpdate;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
-import cn.KiesPro.utils.CombatUtil;
+import cn.KiesPro.utils.MathUtils;
+import cn.KiesPro.utils.RotationUtil;
 import cn.KiesPro.utils.TimerUtils;
+import cn.KiesPro.utils.raven.RavenUtils;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemSword;
@@ -43,6 +49,11 @@ public class KillAura extends Module {
     public static Setting swordOnly;
     public static Setting axeOnly;
     
+    public static Setting player;
+    public static Setting mobs;
+    public static Setting animals;
+    public static Setting invis;
+    
     //KillAura
     private TimerUtils switchTimer = new TimerUtils();
     private TimerUtils attackTimer = new TimerUtils();
@@ -54,6 +65,7 @@ public class KillAura extends Module {
     
     public static boolean isAttackTick;
     public static boolean isRotationTick;
+    private boolean canBlock;
     private boolean isBlocking;
     
 	public KillAura() {
@@ -74,12 +86,67 @@ public class KillAura extends Module {
         registerSetting(switchDelay = new Setting("SwitchDelay", this, 200.0D, 1.0D, 1000.0D, true));
         registerSetting(maxCps = new Setting("MaxCPS", this, 10.0D, 2.0D, 20.0D, false));
         registerSetting(minCps = new Setting("MinCPS", this, 10.0D, 2.0D, 20.0D, false));
-        registerSetting(autoblock = new Setting("Autoblock", this, 10.0D, 2.0D, 20.0D, false));
-        registerSetting(raytrace = new Setting("Raytrace", this, 10.0D, 2.0D, 20.0D, false));
-        registerSetting(onClick = new Setting("OnClick", this, 10.0D, 2.0D, 20.0D, false));
-        registerSetting(swordOnly = new Setting("SwordOnly", this, 10.0D, 2.0D, 20.0D, false));
-        registerSetting(axeOnly = new Setting("AxeOnly", this, 10.0D, 2.0D, 20.0D, false));
+        registerSetting(autoblock = new Setting("Autoblock", this, false));
+        registerSetting(raytrace = new Setting("Raytrace", this, false));
+        registerSetting(onClick = new Setting("OnClick", this, false));
+        registerSetting(swordOnly = new Setting("SwordOnly", this, false));
+        registerSetting(axeOnly = new Setting("AxeOnly", this, false));
+        
+        registerSetting(player = new Setting("Players", this, false));
+        registerSetting(mobs = new Setting("Mobs", this, false));
+        registerSetting(animals = new Setting("Animals", this, false));
+        registerSetting(invis = new Setting("Invisibles", this, false));
 	}
+	
+    @EventTarget
+	public void onPreUpdate(EventPreUpdate e) {
+        isRotationTick = false;
+        this.setTargets();
+
+        if (!RavenUtils.isPlayerInGame())
+            return;
+        
+            if (!onClick.getValBoolean() || mc.gameSettings.keyBindAttack.isKeyDown()) {
+                this.isBlocking = mc.thePlayer.isUsingItem() && mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() instanceof ItemSword;
+                if (this.target != null) {
+
+                    this.rotate(e);
+                    double d0 = (double) mc.thePlayer.getDistanceToEntity(this.target);
+
+                    if (d0 <= blockRange.getValDouble() && d0 <= range.getValDouble() && autoblock.getValBoolean() && mc.thePlayer.getCurrentEquippedItem() != null && mc.thePlayer.getCurrentEquippedItem().getItem() instanceof ItemSword) {
+                        this.canBlock = true;
+                    } else {
+                        this.canBlock = false;
+                    }
+
+                    if (this.canBlock && !this.isBlocking) {
+                        this.block();
+                    }
+
+                    if (d0 <= range.getValDouble() && attackTimer.hasReached(1000.0D / MathUtils.randomNumber(maxCps.getValDouble(), minCps.getValDouble()))) {
+                    	
+                        mc.thePlayer.swingItem();
+                        if (ThreadLocalRandom.current().nextInt(0, 100) <= hitChance.getValDouble() && (mc.objectMouseOver.entityHit != null && (mc.objectMouseOver.entityHit == this.target || mode.getValString() == "Blatant") || !raytrace.getValBoolean()) && this.canHit()) {
+                            if (this.isBlocking) {
+                                this.unBlock();
+                            }
+
+                            isAttackTick = true;
+                            this.attack();
+                            if (this.canBlock) {
+                                this.block();
+                            }
+                        }
+
+                        this.attackTimer.reset();
+                    } else {
+                        isAttackTick = false;
+                    }
+                } else if (this.isBlocking) {
+                    this.unBlock();
+                }
+        }
+    }
 	
     private boolean canHit() {
         boolean flag = Client.instance.settingsManager.getSettingByName(this, "Range").getValBoolean();
@@ -105,6 +172,41 @@ public class KillAura extends Module {
 
         return true;
     }
+    
+    private void rotate(EventPreUpdate e) {
+        if (canHit()) {
+            float[] afloat = RotationUtil.getRotations(this.target);
+            if (rotaion.getValString() == "Blatant") {
+            	e.setYaw(afloat[0]);
+            	e.setPitch(afloat[1]);
+//				mc.thePlayer.rotationYaw = afloat[0];
+//				mc.thePlayer.rotationPitch = afloat[1];
+				isRotationTick = true;
+			} else {
+                double d0;
+                double d1;
+                float f;
+                float f1;
+                
+                if (rotaion.getValString() == "Smooth") {
+                	d0 = ThreadLocalRandom.current().nextDouble(7.5D, 10.0D);
+                    f = RotationUtil.getYawChange(mc.thePlayer.prevRotationYaw, this.target.posX + ThreadLocalRandom.current().nextDouble(-1.0D, 1.0D) * 0.05D, this.target.posZ + ThreadLocalRandom.current().nextDouble(-1.0D, 1.0D) * 0.05D);
+                    f1 = (float) ((double) f / d0);
+                   mc.thePlayer.rotationYaw = mc.thePlayer.prevRotationYaw + f1;
+                    d1 = (double) (afloat[1] - mc.thePlayer.rotationPitch);
+                    mc.thePlayer.rotationPitch = (float) ((double) mc.thePlayer.rotationPitch + d1 / d0);
+                    isRotationTick = true;
+                } else if (rotaion.getValString() == "Legit") {
+                	//还没写好
+                }
+			}
+        	}
+        if (mc.thePlayer.rotationPitch > 90.0F) {
+            mc.thePlayer.rotationPitch = 90.0F;
+        } else if (mc.thePlayer.rotationPitch < -90.0F) {
+            mc.thePlayer.rotationPitch = -90.0F;
+        }
+        }
 	
     public void onEnable() {
         this.targets.clear();
@@ -122,52 +224,51 @@ public class KillAura extends Module {
     }
     
     private void setTargets() {
+    	
         this.targets = this.getTargets();
         if (!this.targets.isEmpty() && (this.target == null || this.targets.contains(this.target))) {
-//            if (!this.mode.equalsIgnoreCase(modes.) && this.switchTimer.hasReached((double) this.switchDelay.getValDouble()) && (!this.mode.equalsIgnoreCase(Killaura.llIlllI[32]) || this.targets.size() != 1)) {
-        	if (mode.getValString() != "Switch" && this.switchTimer.hasReached((double) this.switchDelay.getValDouble()) && (!this.mode.equalsIgnoreCase(Killaura.llIlllI[32]) || this.targets.size() != 1)) {
-                if (this.mode.equalsIgnoreCase(llIlllI[33])) {
-                    if (this.target != null && this.isValid(this.target) && this.targets.size() == 1) {
-                        return;
-                    }
+        //Single
+            if (mode.getValString() == "Single") {
+                if (this.target != null && this.isValid(this.target) && this.targets.size() == 1) {
+                    return;
+                }
+            }
+            if (mode.getValString() == "Switch") {
+                if (this.target == null) {
+                    this.target = (EntityLivingBase) this.targets.get(0);
+                } else if (this.targets.size() > 1) {
+                    int i = this.targets.size() - 1;
 
-                    if (this.target == null) {
-                        this.target = (EntityLivingBase) this.targets.get(0);
-                    } else if (this.targets.size() > 1) {
-                        int i = this.targets.size() - 1;
-
-                        if (this.currentIndex >= i) {
-                            this.currentIndex = 0;
-                        } else {
-                            ++this.currentIndex;
-                        }
-
-                        if (this.targets.get(this.currentIndex) != null && this.targets.get(this.currentIndex) != this.target) {
-                            this.target = (EntityLivingBase) this.targets.get(this.currentIndex);
-                            this.switchTimer.reset();
-                        }
+                    if (this.currentIndex >= i) {
+                        this.currentIndex = 0;
                     } else {
-                        this.target = null;
+                        ++this.currentIndex;
                     }
-                } else if (this.mode.equalsIgnoreCase(Killaura.llIlllI[34])) {
+
+                    if (this.targets.get(this.currentIndex) != null && this.targets.get(this.currentIndex) != this.target) {
+                        this.target = (EntityLivingBase) this.targets.get(this.currentIndex);
+                        this.switchTimer.reset();
+                    }
+                }
+                if (mode.getValString() == "Multi") {
                     if (this.targets.isEmpty()) {
                         this.target = null;
                     } else if (this.target != null && !this.targets.contains(this.target) || this.target == null) {
                         this.target = (EntityLivingBase) this.targets.get(ThreadLocalRandom.current().nextInt(this.targets.size() - 1));
                     }
                 }
-            } else {
+                
+            }
+        }
                 if (this.target != null && this.isValid(this.target)) {
                     return;
+                } else {
+                    this.target = null;
                 }
-
                 this.target = (EntityLivingBase) this.targets.get(0);
-            }
 
-        } else {
-            this.target = null;
-        }
     }
+    
     
     private int getTargetInt() {
         for (int i = 0; i < this.targets.size(); ++i) {
@@ -179,6 +280,7 @@ public class KillAura extends Module {
     }
 	
     private List getTargets() {
+    	
         ArrayList arraylist = new ArrayList();
         Iterator iterator = mc.theWorld.loadedEntityList.iterator();
 
@@ -192,16 +294,57 @@ public class KillAura extends Module {
 
         return arraylist;
     }
+    
+	public EntityLivingBase getTarget(double range) {
+		EntityLivingBase target = null;
+		double cDist = 100;
+		for (Entity e : mc.theWorld.loadedEntityList) {
+			double dist = mc.thePlayer.getDistanceToEntity(e);
+			if (dist < range && e != mc.thePlayer && (e instanceof EntityPlayer || e instanceof EntityMob || e instanceof EntityAnimal)) {
+				if (cDist > dist) {
+					target = (EntityLivingBase) e;
+					cDist = dist;
+				}
+			}
+			
+		}
+		return target;
+	}
 
-    private boolean isValid(Entity entity) {
-        return entity instanceof EntityLivingBase && entity != mc.thePlayer && entity.isEntityAlive() && !(entity instanceof EntityArmorStand) && CombatUtil.canTarget(entity, true) ? (double) mc.thePlayer.getDistanceToEntity(entity) <= Math.max(range.getValDouble(), blockRange.getValDouble()) : false;
+    private boolean isValid(Entity e) {
+    	
+//        return entity instanceof EntityLivingBase
+//        		&& entity != mc.thePlayer 
+//        		&& entity.isEntityAlive() 
+//        		&& !(entity instanceof EntityArmorStand) 
+//        		&& CombatUtil.canTarget(entity, true) ? (double) mc.thePlayer.getDistanceToEntity(entity) <= Math.max(range.getValDouble(), blockRange.getValDouble()) : false;
+
+        if (e == mc.thePlayer) {
+            return false;
+        }
+        if (!e.isEntityAlive()) {
+            return false;
+        }
+        if (e instanceof EntityPlayer && player.getValBoolean() && mc.thePlayer.isOnSameTeam((EntityLivingBase)e)) {
+            return true;
+        }
+        if (e instanceof EntityMob && mobs.getValBoolean()) {
+            return true;
+        }
+        if (e instanceof EntityAnimal && animals.getValBoolean()) {
+            return true;
+        }
+        if (e.isInvisible() && !invis.getValBoolean()) {
+            return true;
+        }
+        return false;
     }
 	
     private boolean attack() {
         if (this.target == null) {
             return false;
         } else {
-            if (mode.equals(rotaion.getValString())) {
+            if (rotaion.getValString() == "Smooth") {
                 Iterator iterator = this.targets.iterator();
 
                 while (iterator.hasNext()) {
