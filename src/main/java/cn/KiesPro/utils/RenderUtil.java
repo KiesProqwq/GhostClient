@@ -7,7 +7,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -15,6 +17,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
+import net.minecraft.util.ResourceLocation;
 
 public class RenderUtil {
 	
@@ -396,4 +399,45 @@ public class RenderUtil {
          ts.draw();
      }
     
+     /**
+      * Draws an image
+      * @param loc The image location
+      * @param x The x position
+      * @param y The y position
+      * @param width The width
+      * @param height The height
+      */
+     public static void drawImage(ResourceLocation image, double x, double y, double width, double height) {
+         drawImage(image, x, y, width, height, -1);
+     }
+
+     public static void drawImage(ResourceLocation image, double x, double y, double width, double height, int color) {
+         GlStateManager.pushMatrix();
+         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+         GL11.glDisable(2929);
+         GL11.glEnable(3042);
+         GL11.glDepthMask(false);
+         OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+         Color color1 = new Color(color);
+         GL11.glColor4f((float)color1.getRed() / 255.0f, (float)color1.getGreen() / 255.0f, (float)color1.getBlue() / 255.0f, (float)color1.getAlpha() / 255.0f);
+         Minecraft.getMinecraft().getTextureManager().bindTexture(image);
+         drawModalRectWithCustomSizedTexture((float)x, (float)y, 0.0f, 0.0f, (float)width, (float)height, (float)width, (float)height);
+         GL11.glDepthMask(true);
+         GL11.glDisable(3042);
+         GL11.glEnable(2929);
+         GlStateManager.popMatrix();
+     }
+     
+     public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight) {
+         float f = 1.0f / textureWidth;
+         float f1 = 1.0f / textureHeight;
+         Tessellator tessellator = Tessellator.getInstance();
+         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+         worldrenderer.pos(x, y + height, 0.0).tex(u * f, (v + height) * f1).endVertex();
+         worldrenderer.pos(x + width, y + height, 0.0).tex((u + width) * f, (v + height) * f1).endVertex();
+         worldrenderer.pos(x + width, y, 0.0).tex((u + width) * f, v * f1).endVertex();
+         worldrenderer.pos(x, y, 0.0).tex(u * f, v * f1).endVertex();
+         tessellator.draw();
+     }
 }

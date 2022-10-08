@@ -31,7 +31,6 @@ public class ForgeMod {
 	@SideOnly(Side.CLIENT)
     @Mod.EventHandler
     public void Mod(FMLPreInitializationEvent event) {
-		
     	Client.instance = new Client();
     	Client.instance.init();
     }

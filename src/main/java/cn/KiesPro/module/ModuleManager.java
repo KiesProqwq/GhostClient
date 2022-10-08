@@ -16,9 +16,10 @@ public class ModuleManager {
 	public ModuleManager() {
 		(modules = new ArrayList<Module>()).clear();
 		//blatant 不完善的
-		
-//		this.modules.add(new BlatantMode());
-//		this.modules.add(new KillAura());
+		this.modules.add(new BlatantMode());
+		this.modules.add(new KillAura());
+		this.modules.add(new Aura());
+
 		//combat
 		this.modules.add(new AntiBot());
 		this.modules.add(new AimAssist());
@@ -56,6 +57,8 @@ public class ModuleManager {
 		this.modules.add(new Sprint());
 		this.modules.add(new Eagle());
 		this.modules.add(new NoJumpDelay());
+		this.modules.add(new Speed());
+		this.modules.add(new NoSlow());
 
 		
 		//Utility

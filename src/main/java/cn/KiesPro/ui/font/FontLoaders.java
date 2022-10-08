@@ -5,15 +5,14 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.client.Minecraft;
 import java.awt.Font;
 
-public abstract class FontLoaders
-{
-    public static CFontRenderer taileb15;
+public abstract class FontLoaders {
+    public static CFontRenderer regular18;
     public static CFontRenderer robotom15;
 
-    private static Font getTaileb(final int size) {
+    private static Font getRegular(final int size) {
         Font font;
         try {
-            final InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("KiesPro/taileb.ttf")).getInputStream();
+            final InputStream is = Minecraft.getMinecraft().getResourceManager().getResource(new ResourceLocation("KiesPro/SF-UI-Display-Regular.ttf")).getInputStream();
             font = Font.createFont(0, is);
             font = font.deriveFont(0, size);
         }
@@ -41,7 +40,7 @@ public abstract class FontLoaders
     }
 
     static {
-        FontLoaders.taileb15 = new CFontRenderer(getTaileb(15), true, true);
+        FontLoaders.regular18 = new CFontRenderer(getRegular(18), true, true);
         FontLoaders.robotom15 = new CFontRenderer(getRoboto(15), true, true);
     }
 }

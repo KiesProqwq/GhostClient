@@ -8,6 +8,7 @@
     "client.renderer.MixinEntityRenderer",
     "client.gui.MixinGuiScreen",
     "client.gui.MixinGuiIngame",
+    "client.gui.MixinGuiMainMenu",
     "entity.MixinEntityLivingBase",
     "entity.MixinEntity",
     "network.MixinNetworkManager"

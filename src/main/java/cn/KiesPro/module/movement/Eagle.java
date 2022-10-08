@@ -6,6 +6,9 @@ import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
+import cn.KiesPro.ui.notifiction.Notification;
+import cn.KiesPro.ui.notifiction.NotificationManager;
+import cn.KiesPro.ui.notifiction.NotificationType;
 import cn.KiesPro.utils.MathUtils;
 import cn.KiesPro.utils.TimerUtils;
 import net.minecraft.client.gui.GuiChat;
@@ -44,7 +47,7 @@ public class Eagle extends Module {
 		
 		//@SubscribeEvent 添加完后在关闭Module也会有效果所以写了这个判断
 		if (Client.instance.moduleManager.getModule("Eagle").isToggled()) {
-			
+		
 		double delay = MathUtils.randomNumber(max, min);
 		int shiftkey = mc.gameSettings.keyBindSneak.getKeyCode();
 		

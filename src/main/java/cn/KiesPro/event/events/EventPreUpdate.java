@@ -1,100 +1,50 @@
 package cn.KiesPro.event.events;
 
 import cn.KiesPro.event.eventapi.events.callables.EventCancellable;
-/*
- * @see MixinEntityPlayerSP.class
- */
-public class EventPreUpdate extends  EventCancellable {
-	//Created by Thread on 2020年12月11日21:22:22;
-    public static float RPITCH;
-    public static float RPPITCH;
-    public double x;
-    public double y;
-    public double z;
-    public float yaw;
-    public float pitch;
-    public boolean onGround;
-    public boolean cancel;
-    public boolean modified;
 
-    public EventPreUpdate(double x, double y, double z, float yaw, float pitch, boolean onGround) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+public class EventPreUpdate extends EventCancellable {
+    private float yaw;
+    private float pitch;
+    public double y;
+    private boolean ground;
+
+    public EventPreUpdate(float yaw, float pitch, double y, boolean ground) {
         this.yaw = yaw;
         this.pitch = pitch;
-        this.onGround = onGround;
+        this.y = y;
+        this.ground = ground;
     }
 
-    public double getX() {
-        return x;
+    public float getYaw() {
+        return this.yaw;
     }
 
-    public void setX(double x) {
-        this.x = x;
+    public void setYaw(float yaw) {
+        this.yaw = yaw;
+    }
+
+    public float getPitch() {
+        return this.pitch;
+    }
+
+    public void setPitch(float pitch) {
+        this.pitch = pitch;
     }
 
     public double getY() {
-        return y;
+        return this.y;
     }
 
     public void setY(double y) {
         this.y = y;
     }
 
-    public double getZ() {
-        return z;
+    public boolean isOnground() {
+        return this.ground;
     }
 
-    public void setZ(double z) {
-        this.z = z;
-    }
-
-    public float getYaw() {
-        return yaw;
-    }
-
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-//        RotationUtil.prevRotations[0] = this.yaw ;
-    }
-
-    public float getPitch() {
-        return pitch;
-    }
-
-    public void setPitch(float pitch) {
-        this.pitch = pitch;
-//        RotationUtil.prevRotations[1] = this.pitch ;
-    }
-
-    public boolean isOnGround() {
-        return onGround;
-    }
-
-    public void setOnGround(boolean onGround) {
-        this.onGround = onGround;
-    }
-
-    public boolean isCancel() {
-        return cancel;
-    }
-
-    public void setCancel(boolean cancel) {
-        this.cancel = cancel;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return this.cancel;
-    }
-
-    @Override
-    public void setCancelled(boolean state) {
-        this.cancel = state;
-    }
-
-    public boolean isModified() {
-        return modified;
+    public void setOnground(boolean ground) {
+        this.ground = ground;
     }
 }
+

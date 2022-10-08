@@ -16,6 +16,7 @@ import cn.KiesPro.event.events.EventRender2D;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
+import cn.KiesPro.ui.notifiction.NotificationManager;
 import cn.KiesPro.utils.SortUtil;
 
 import java.awt.*;
@@ -42,7 +43,9 @@ public class HUD extends Module {
         sort.add("Length short > long");
         sort.add("Alphabet");
         sort.add("idfc");
-
+        
+        Setting noti = new Setting("Notifiction", this, true);
+        
         Setting waterMark = new Setting("Watermark", this, true);
         Setting background = new Setting("Background", this, false);
         Setting textShadow = new Setting("Text Shadow", this, true);
@@ -53,6 +56,8 @@ public class HUD extends Module {
         Setting miniboxWidth = new Setting("Mini box width", this, 1, 0, 10, true);
         Setting topOffSet = new Setting("HUD top offset", this, 4, 0, 500, true);
         Setting rightOffSet = new Setting("HUD right offset", this, 4, 0, 1000, true);
+        
+
 
         Client.instance.settingsManager.rSetting(arrayListSort);
         Client.instance.settingsManager.rSetting(waterMark);
@@ -64,6 +69,7 @@ public class HUD extends Module {
         Client.instance.settingsManager.rSetting(miniboxWidth);
         Client.instance.settingsManager.rSetting(topOffSet);
         Client.instance.settingsManager.rSetting(rightOffSet);
+        Client.instance.settingsManager.rSetting(noti);
     }
 
     @EventTarget
@@ -86,6 +92,8 @@ public class HUD extends Module {
         topOffSet = (int) Client.instance.settingsManager.getSettingByName(this, "HUD top offset").getValDouble();;
         rightOffSet = (int) Client.instance.settingsManager.getSettingByName(this, "HUD right offset").getValDouble();;
         miniboxWidth = (int) Client.instance.settingsManager.getSettingByName(this, "Mini box width").getValDouble();;
+        
+        NotificationManager.render();
 
         if(watermark) {
             String waterMarkText = Client.instance.CLIENT_NAME + " " + Client.instance.CLIENT_VERSION.toUpperCase();

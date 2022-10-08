@@ -3,6 +3,9 @@ package cn.KiesPro.module;
 import cn.KiesPro.Client;
 import cn.KiesPro.event.eventapi.EventManager;
 import cn.KiesPro.settings.Setting;
+import cn.KiesPro.ui.notifiction.Notification;
+import cn.KiesPro.ui.notifiction.NotificationManager;
+import cn.KiesPro.ui.notifiction.NotificationType;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -61,8 +64,10 @@ public class Module {
 		
 		if (this.toggled) {
 			this.onEnable();
+			NotificationManager.add(new Notification(NotificationType.SUCCESS, "Enable", getName() + " Enable.", 1000));
 		} else {
 			this.onDisable();
+			NotificationManager.add(new Notification(NotificationType.ERROR, "Disable", getName() + " Disable.", 1000));
 		}
 		if (Client.instance.configmanager != null) {
 			Client.instance.configmanager.save();
@@ -71,11 +76,13 @@ public class Module {
 	
 	public void toggle() {
 		this.toggled = !this.toggled;
-		
+
 		if (this.toggled) {
 			this.onEnable();
+			NotificationManager.add(new Notification(NotificationType.SUCCESS, "Enable", getName() + " Enable.", 1000));
 		} else {
 			this.onDisable();
+			NotificationManager.add(new Notification(NotificationType.ERROR, "Disable", getName() + " Disable.", 1000));
 		}
 		if (Client.instance.configmanager != null) {
 			Client.instance.configmanager.save();

@@ -10,18 +10,22 @@ public class RotationUtil {
     static Minecraft mc = Minecraft.getMinecraft();
     
     public static float[] getRotations(Entity entity) {
+        double diffY;
         if (entity == null) {
             return null;
-        } else {
-            double d0 = entity.posX - mc.thePlayer.posX;
-            double d1 = entity.posZ - mc.thePlayer.posZ;
-            EntityLivingBase entitylivingbase = (EntityLivingBase) entity;
-            double d2 = entitylivingbase.posY + ((double) entitylivingbase.getEyeHeight() - 0.4D) - (mc.thePlayer.posY + (double) mc.thePlayer.getEyeHeight());
-            double d3 = (double) MathHelper.sqrt_double(d0 * d0 + d1 * d1);
-            float f = (float) (Math.atan2(d1, d0) * 180.0D / Math.PI) - 90.0F;
-            float f1 = (float) (-(Math.atan2(d2, d3) * 180.0D / Math.PI));
-            return new float[] { f, f1};
         }
+        double diffX = entity.posX - mc.thePlayer.posX;
+        double diffZ = entity.posZ - mc.thePlayer.posZ;
+        if (entity instanceof EntityLivingBase) {
+            EntityLivingBase elb = (EntityLivingBase) entity;
+            diffY = elb.posY + ((double) elb.getEyeHeight() - 0.4) - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
+        } else {
+            diffY = (entity.getEntityBoundingBox().minY + entity.getEntityBoundingBox().maxY) / 2.0 - (mc.thePlayer.posY + (double)mc.thePlayer.getEyeHeight());
+        }
+        double dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+        float yaw = (float) (Math.atan2(diffZ, diffX) * 180.0 / Math.PI) - 90.0f;
+        float pitch = (float) (-Math.atan2(diffY, dist) * 180.0 / Math.PI);
+        return new float[]{yaw, pitch};
     }
     
     public static float getYawChange(float f, double d0, double d1) {

@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import cn.KiesPro.Client;
 import cn.KiesPro.event.eventapi.EventManager;
 import cn.KiesPro.event.events.EventChat;
 import cn.KiesPro.event.events.EventMove;
@@ -17,26 +18,44 @@ import cn.KiesPro.event.events.EventStrafe;
 import cn.KiesPro.event.events.EventUpdate;
 import cn.KiesPro.injection.interfaces.IEntityPlayerSP;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C01PacketChatMessage;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovementInput;
+import net.minecraft.util.ResourceLocation;
 
 @Mixin(EntityPlayerSP.class)
 public class MixinEntityPlayerSP extends AbstractClientPlayer implements IEntityPlayerSP {
-	
+
     @Shadow
     public MovementInput movementInput;
+    
     @Shadow
+    private int horseJumpPowerCounter;
+    @Shadow
+    public int sprintingTicksLeft;
+    @Shadow
+    protected int sprintToggleTimer;
+    @Shadow
+    private float horseJumpPower;
+    @Shadow
+    public float timeInPortal;
+    @Shadow
+    public float prevTimeInPortal;
+    
     @Final
+    @Shadow
     public NetHandlerPlayClient sendQueue;
-	
     @Shadow
     protected Minecraft mc;
     @Shadow
@@ -65,82 +84,326 @@ public class MixinEntityPlayerSP extends AbstractClientPlayer implements IEntity
         super(null, null);
     }
     
+    /*
+     * For onLivingUpdate
+     */
+    @Shadow
+    protected void sendHorseJump() {
+        this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.RIDING_JUMP, (int)(this.getHorseJumpPower() * 100.0F)));
+    }
+    
+    @Shadow
+    public boolean isRidingHorse() {
+        return this.ridingEntity != null && this.ridingEntity instanceof EntityHorse && ((EntityHorse)this.ridingEntity).isHorseSaddled();
+    }
+    
+    @Shadow
+    public float getHorseJumpPower() {
+        return this.horseJumpPower;
+    }
+    
+    @Overwrite
+    public void onLivingUpdate()
+    {
+        if (this.sprintingTicksLeft > 0)
+        {
+            --this.sprintingTicksLeft;
+
+            if (this.sprintingTicksLeft == 0)
+            {
+                this.setSprinting(false);
+            }
+        }
+
+        if (this.sprintToggleTimer > 0)
+        {
+            --this.sprintToggleTimer;
+        }
+
+        this.prevTimeInPortal = this.timeInPortal;
+
+        if (this.inPortal)
+        {
+            if (this.mc.currentScreen != null && !this.mc.currentScreen.doesGuiPauseGame())
+            {
+                this.mc.displayGuiScreen((GuiScreen)null);
+            }
+
+            if (this.timeInPortal == 0.0F)
+            {
+                this.mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("portal.trigger"), this.rand.nextFloat() * 0.4F + 0.8F));
+            }
+
+            this.timeInPortal += 0.0125F;
+
+            if (this.timeInPortal >= 1.0F)
+            {
+                this.timeInPortal = 1.0F;
+            }
+
+            this.inPortal = false;
+        }
+        else if (this.isPotionActive(Potion.confusion) && this.getActivePotionEffect(Potion.confusion).getDuration() > 60)
+        {
+            this.timeInPortal += 0.006666667F;
+
+            if (this.timeInPortal > 1.0F)
+            {
+                this.timeInPortal = 1.0F;
+            }
+        }
+        else
+        {
+            if (this.timeInPortal > 0.0F)
+            {
+                this.timeInPortal -= 0.05F;
+            }
+
+            if (this.timeInPortal < 0.0F)
+            {
+                this.timeInPortal = 0.0F;
+            }
+        }
+
+        if (this.timeUntilPortal > 0)
+        {
+            --this.timeUntilPortal;
+        }
+
+        boolean flag = this.movementInput.jump;
+        boolean flag1 = this.movementInput.sneak;
+        float f = 0.8F;
+        boolean flag2 = this.movementInput.moveForward >= f;
+        this.movementInput.updatePlayerMoveState();
+
+        if (this.isUsingItem() && !this.isRiding() && !Client.instance.moduleManager.getModule("NoSlow").isToggled()) {
+            this.movementInput.moveStrafe *= 0.2F;
+            this.movementInput.moveForward *= 0.2F;
+            this.sprintToggleTimer = 0;
+        }
+
+        this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
+        this.pushOutOfBlocks(this.posX - (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double)this.width * 0.35D);
+        this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ - (double)this.width * 0.35D);
+        this.pushOutOfBlocks(this.posX + (double)this.width * 0.35D, this.getEntityBoundingBox().minY + 0.5D, this.posZ + (double)this.width * 0.35D);
+        boolean flag3 = (float)this.getFoodStats().getFoodLevel() > 6.0F || this.capabilities.allowFlying;
+
+        if (this.onGround && !flag1 && !flag2 && this.movementInput.moveForward >= f && !this.isSprinting() && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness))
+        {
+            if (this.sprintToggleTimer <= 0 && !this.mc.gameSettings.keyBindSprint.isKeyDown())
+            {
+                this.sprintToggleTimer = 7;
+            }
+            else
+            {
+                this.setSprinting(true);
+            }
+        }
+
+        if (!this.isSprinting() && this.movementInput.moveForward >= f && flag3 && !this.isUsingItem() && !this.isPotionActive(Potion.blindness) && this.mc.gameSettings.keyBindSprint.isKeyDown())
+        {
+            this.setSprinting(true);
+        }
+
+        if (this.isSprinting() && (this.movementInput.moveForward < f || this.isCollidedHorizontally || !flag3))
+        {
+            this.setSprinting(false);
+        }
+
+        if (this.capabilities.allowFlying)
+        {
+            if (this.mc.playerController.isSpectatorMode())
+            {
+                if (!this.capabilities.isFlying)
+                {
+                    this.capabilities.isFlying = true;
+                    this.sendPlayerAbilities();
+                }
+            }
+            else if (!flag && this.movementInput.jump)
+            {
+                if (this.flyToggleTimer == 0)
+                {
+                    this.flyToggleTimer = 7;
+                }
+                else
+                {
+                    this.capabilities.isFlying = !this.capabilities.isFlying;
+                    this.sendPlayerAbilities();
+                    this.flyToggleTimer = 0;
+                }
+            }
+        }
+
+        if (this.capabilities.isFlying && this.isCurrentViewEntity())
+        {
+            if (this.movementInput.sneak)
+            {
+                this.motionY -= (double)(this.capabilities.getFlySpeed() * 3.0F);
+            }
+
+            if (this.movementInput.jump)
+            {
+                this.motionY += (double)(this.capabilities.getFlySpeed() * 3.0F);
+            }
+        }
+
+        if (this.isRidingHorse())
+        {
+            if (this.horseJumpPowerCounter < 0)
+            {
+                ++this.horseJumpPowerCounter;
+
+                if (this.horseJumpPowerCounter == 0)
+                {
+                    this.horseJumpPower = 0.0F;
+                }
+            }
+
+            if (flag && !this.movementInput.jump)
+            {
+                this.horseJumpPowerCounter = -10;
+                this.sendHorseJump();
+            }
+            else if (!flag && this.movementInput.jump)
+            {
+                this.horseJumpPowerCounter = 0;
+                this.horseJumpPower = 0.0F;
+            }
+            else if (flag)
+            {
+                ++this.horseJumpPowerCounter;
+
+                if (this.horseJumpPowerCounter < 10)
+                {
+                    this.horseJumpPower = (float)this.horseJumpPowerCounter * 0.1F;
+                }
+                else
+                {
+                    this.horseJumpPower = 0.8F + 2.0F / (float)(this.horseJumpPowerCounter - 9) * 0.1F;
+                }
+            }
+        }
+        else
+        {
+            this.horseJumpPower = 0.0F;
+        }
+
+        super.onLivingUpdate();
+
+        if (this.onGround && this.capabilities.isFlying && !this.mc.playerController.isSpectatorMode())
+        {
+            this.capabilities.isFlying = false;
+            this.sendPlayerAbilities();
+        }
+    }
     @Overwrite
     public void onUpdateWalkingPlayer() {
-        try {
-            boolean flag = this.isSprinting();
-            
-            EventPreUpdate pre = new EventPreUpdate(this.posX, this.posY, this.posZ, this.rotationYaw, this.rotationPitch, this.onGround);
-            EventPostUpdate post = new EventPostUpdate(this.rotationYaw, this.rotationPitch);
-            
-            EventManager.call(pre);
-            if (pre.cancel) {
-                EventManager.call(post);
-                return;
-            }
-            
-            if (flag != this.serverSprintState) {
-                if (flag) {
-                    this.sendQueue.addToSendQueue((Packet)new C0BPacketEntityAction((Entity)this, C0BPacketEntityAction.Action.START_SPRINTING));
-                }
-                else {
-                    this.sendQueue.addToSendQueue((Packet)new C0BPacketEntityAction((Entity)this, C0BPacketEntityAction.Action.STOP_SPRINTING));
-                }
-                this.serverSprintState = flag;
-            }
-            final boolean flag2 = this.isSneaking();
-            if (flag2 != this.serverSneakState) {
-                if (flag2) {
-                    this.sendQueue.addToSendQueue((Packet)new C0BPacketEntityAction((Entity)this, C0BPacketEntityAction.Action.START_SNEAKING));
-                }
-                else {
-                    this.sendQueue.addToSendQueue((Packet)new C0BPacketEntityAction((Entity)this, C0BPacketEntityAction.Action.STOP_SNEAKING));
-                }
-                this.serverSneakState = flag2;
-            }
-            if (this.isCurrentViewEntity()) {
-                final double d0 = pre.getX() - this.lastReportedPosX;
-                final double d2 = pre.getY() - this.lastReportedPosY;
-                final double d3 = pre.getZ() - this.lastReportedPosZ;
-                final double d4 = pre.getYaw() - this.lastReportedYaw;
-                final double d5 = pre.getPitch() - this.lastReportedPitch;
-                boolean flag3 = d0 * d0 + d2 * d2 + d3 * d3 > 9.0E-4 || this.positionUpdateTicks >= 20;
-                final boolean flag4 = d4 != 0.0 || d5 != 0.0;
-                if (this.ridingEntity == null) {
-                    if (flag3 && flag4) {
-                        this.sendQueue.getNetworkManager().sendPacket((Packet)new C03PacketPlayer.C06PacketPlayerPosLook(pre.getX(), pre.getY(), pre.getZ(), pre.getYaw(), pre.getPitch(), pre.isOnGround()));
-                    }
-                    else if (flag3) {
-                        this.sendQueue.getNetworkManager().sendPacket((Packet)new C03PacketPlayer.C04PacketPlayerPosition(pre.getX(), pre.getY(), pre.getZ(), pre.isOnGround()));
-                    }
-                    else if (flag4) {
-                        this.sendQueue.getNetworkManager().sendPacket((Packet)new C03PacketPlayer.C05PacketPlayerLook(pre.getYaw(), pre.getPitch(), pre.isOnGround()));
-                    }
-                    else {
-                        this.sendQueue.getNetworkManager().sendPacket((Packet)new C03PacketPlayer(pre.isOnGround()));
-                    }
-                }
-                else {
-                    this.sendQueue.getNetworkManager().sendPacket((Packet)new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0, this.motionZ, pre.getYaw(), pre.getPitch(), pre.isOnGround()));
-                    flag3 = false;
-                }
-                ++this.positionUpdateTicks;
-                if (flag3) {
-                    this.lastReportedPosX = pre.getX();
-                    this.lastReportedPosY = pre.getY();
-                    this.lastReportedPosZ = pre.getZ();
-                    this.positionUpdateTicks = 0;
-                }
-                if (flag4) {
-                    this.lastReportedYaw = pre.getYaw();
-                    this.lastReportedPitch = pre.getPitch();
-                }
-            }
-            EventManager.call(pre);
+        EventPreUpdate e = new EventPreUpdate(this.rotationYaw, this.rotationPitch, this.posY, Minecraft.getMinecraft().thePlayer.onGround);
+        EventPostUpdate post = new EventPostUpdate(this.rotationYaw, this.rotationPitch);
+        EventManager.call(e);
+        if (e.isCancelled()) {
+        	EventManager.call(post);
+            return;
         }
-        catch (Exception e) {
-            e.printStackTrace();
+        double oldX = this.posX;
+        double oldZ = this.posZ;
+        float oldPitch = this.rotationPitch;
+        float oldYaw = this.rotationYaw;
+        boolean oldGround = this.onGround;
+        this.rotationPitch = e.getPitch();
+        this.rotationYaw = e.getYaw();
+        this.onGround = e.isOnground();
+        
+        boolean flag = this.isSprinting();
+
+        if (flag != this.serverSprintState)
+        {
+            if (flag)
+            {
+                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.START_SPRINTING));
+            }
+            else
+            {
+                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.STOP_SPRINTING));
+            }
+
+            this.serverSprintState = flag;
         }
+
+        boolean flag1 = this.isSneaking();
+
+        if (flag1 != this.serverSneakState)
+        {
+            if (flag1)
+            {
+                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.START_SNEAKING));
+            }
+            else
+            {
+                this.sendQueue.addToSendQueue(new C0BPacketEntityAction(this, C0BPacketEntityAction.Action.STOP_SNEAKING));
+            }
+
+            this.serverSneakState = flag1;
+        }
+
+        if (this.isCurrentViewEntity())
+        {
+            double d0 = this.posX - this.lastReportedPosX;
+            double d1 = this.getEntityBoundingBox().minY - this.lastReportedPosY;
+            double d2 = this.posZ - this.lastReportedPosZ;
+            double d3 = (double)(this.rotationYaw - this.lastReportedYaw);
+            double d4 = (double)(this.rotationPitch - this.lastReportedPitch);
+            boolean flag2 = d0 * d0 + d1 * d1 + d2 * d2 > 9.0E-4D || this.positionUpdateTicks >= 20;
+            boolean flag3 = d3 != 0.0D || d4 != 0.0D;
+
+            if (this.ridingEntity == null)
+            {
+                if (flag2 && flag3)
+                {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.posX, e.getY(), this.posZ, this.rotationYaw, this.rotationPitch, e.isOnground()));
+                }
+                else if (flag2)
+                {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(this.posX, e.getY(), this.posZ, e.isOnground()));
+                }
+                else if (flag3)
+                {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(this.rotationYaw, this.rotationPitch, e.isOnground()));
+                }
+                else
+                {
+                    this.sendQueue.addToSendQueue(new C03PacketPlayer(e.isOnground()));
+                }
+            }
+            else
+            {
+                this.sendQueue.addToSendQueue(new C03PacketPlayer.C06PacketPlayerPosLook(this.motionX, -999.0D, this.motionZ, this.rotationYaw, this.rotationPitch, this.onGround));
+                flag2 = false;
+            }
+
+            ++this.positionUpdateTicks;
+
+            if (flag2)
+            {
+                this.lastReportedPosX = this.posX;
+                this.lastReportedPosY = this.getEntityBoundingBox().minY;
+                this.lastReportedPosZ = this.posZ;
+                this.positionUpdateTicks = 0;
+            }
+
+            if (flag3)
+            {
+                this.lastReportedYaw = this.rotationYaw;
+                this.lastReportedPitch = this.rotationPitch;
+            }
+        }
+        this.posX = oldX;
+        this.posZ = oldZ;
+        this.rotationYaw = oldYaw;
+        this.rotationPitch = oldPitch;
+        this.onGround = oldGround;
+        EventManager.call(post);
     }
     
     @Shadow
