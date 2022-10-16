@@ -1,10 +1,9 @@
-/*
- * Decompiled with CFR 0_132.
- */
 package cn.KiesPro.event.events;
 
 import cn.KiesPro.event.eventapi.events.Event;
-
+/*
+ * @see MixinEntityPlayerSP.class
+ */
 public class EventPostUpdate implements Event {
 	
     private float yaw;

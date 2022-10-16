@@ -5,13 +5,14 @@
   "refmap": "kies.mixin.refmap.json",
   "mixins": [
     "client.entity.MixinEntityPlayerSP",
-    "client.renderer.MixinEntityRenderer",
     "client.gui.MixinGuiScreen",
     "client.gui.MixinGuiIngame",
     "client.gui.MixinGuiMainMenu",
+    "client.renderer.MixinEntityRenderer",
+    "client.renderer.MixinRender",
+    "client.MixinMinecraft",
     "entity.MixinEntityLivingBase",
     "entity.MixinEntity",
     "network.MixinNetworkManager"
-    
   ]
 }

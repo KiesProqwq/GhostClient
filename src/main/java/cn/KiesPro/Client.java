@@ -12,8 +12,12 @@ import cn.KiesPro.module.ModuleManager;
 import cn.KiesPro.settings.SettingsManager;
 import cn.KiesPro.ui.clickgui.old.ClickGui;
 import cn.KiesPro.ui.font.FontLoaders;
+import cn.KiesPro.utils.ratsiel.auth.model.mojang.MinecraftAuthenticator;
+import cn.KiesPro.utils.ratsiel.auth.model.mojang.MinecraftToken;
+import cn.KiesPro.utils.ratsiel.auth.model.mojang.profile.MinecraftProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.Session;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -22,7 +26,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
 public class Client
 {
 	public String CLIENT_NAME = "Kies";
-	public String CLIENT_VERSION = "1.7";
+	public String CLIENT_VERSION = "1.7.2";
 	
 	public String prefix = "§f[" + ChatFormatting.RED + "K§f" + "]";
 	//Minecraft Instance
@@ -43,6 +47,8 @@ public class Client
     //BlatantMode
     public boolean blatant = false;
     
+    String account = "1511936608@qq.com";
+    String password = "gxy070108";
     
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
@@ -58,6 +64,18 @@ public class Client
         configmanager = new ConfigManager();
     	
     	System.out.println("KiesPro is Load");
+    	
+    }
+    
+    /*
+     * @username account
+     * useage: mc.session = getSession(xxx, xxx);
+     */
+    public Session getSession(String username, String password) {
+    	final MinecraftAuthenticator minecraftAuthenticator = new MinecraftAuthenticator();
+        final MinecraftToken minecraftToken = minecraftAuthenticator.loginWithXbox(username, password);
+        final MinecraftProfile minecraftProfile = minecraftAuthenticator.checkOwnership(minecraftToken);
+    	return new Session(minecraftProfile.getUsername(), minecraftProfile.getUuid().toString(), minecraftToken.getAccessToken(), "mojang"); 
     }
     
     public void sendMessage(String message) {

@@ -1,6 +1,7 @@
 package cn.KiesPro.module.blatant;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 import cn.KiesPro.event.eventapi.EventTarget;
 import cn.KiesPro.event.events.EventPostUpdate;
@@ -32,10 +33,13 @@ public class Aura extends Module {
     private boolean unBlock = false;
     
     ArrayList<String> rotaions = new ArrayList<String>();
+
+
     
     public static Setting rotaion;
     
     public static Setting range;
+	public static Setting hitChance;
     public static Setting maxCps;
     public static Setting minCps;
     
@@ -50,10 +54,10 @@ public class Aura extends Module {
         
         registerSetting(rotaion = new Setting("Rotaions", this,"Blatant",rotaions));
         registerSetting(range =new Setting("Range", this, 4.20D, 1.00D, 6.00D, false));
+        registerSetting(hitChance =new Setting("HitChance", this, 100.0D, 1.0D, 100.0D, true));
         registerSetting(maxCps = new Setting("MaxCPS", this, 10.0D, 2.0D, 20.0D, false));
         registerSetting(minCps = new Setting("MinCPS", this, 10.0D, 2.0D, 20.0D, false));
         registerSetting(autoblock = new Setting("Autoblock", this, false));
-        registerSetting(keepsprint = new Setting("KeepSprint", this, false));
 	}
 	
 	@EventTarget
@@ -66,55 +70,31 @@ public class Aura extends Module {
 		//Rotations
         switch (rotaion.getValString()) {
         	case "Blatant":
-                float[] rot = RotationUtil.getRotations(target);
-//        		System.out.println("Blatantttttttttttttttt");
                 //work!!!!!
-                facing = getRotationsToEnt(target);
+                facing = RotationUtil.getRotationsToEnt(target);
                 facing[0] += MathUtils.randomNumber(1, 5);
                 facing[1] += MathUtils.randomNumber(1, 5);
                 facing[0] = (float) (facing[0] + MathUtils.randomNumber(1.98f, -1.98f));
-
                 e.setYaw(facing[0]);
                 e.setPitch(facing[1]);
-
                 mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset = facing[0];
-//                mc.thePlayer.renderYawOffset = yaw;
-//                //head
-//                mc.thePlayer.rotationYawHead = yaw;
-//                mc.thePlayer.rotationPitch = pitch;
-//        		e.setYaw(rot[0]);
-//        		e.setPitch(rot[1]);
+
         		break;
         	case "Safe":
         }
 
 		if (target != null && shouldAttack()) {
 	        mc.thePlayer.swingItem();
+	        mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
 	    	mc.gameSettings.keyBindUseItem.pressed = true;
 
-	        //keepsprint
-            if (!keepsprint.isEnabled()) {
-                mc.playerController.attackEntity((EntityPlayer)mc.thePlayer, target);
-            } else {
-                mc.getNetHandler().addToSendQueue(new C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK));
-            }
 			timer.reset();
 		}
 	}
 	
-    private float[] getRotationsToEnt(Entity ent) {
-        final double differenceX = ent.posX - mc.thePlayer.posX;
-        final double differenceY = (ent.posY + ent.height) - (mc.thePlayer.posY + mc.thePlayer.height) - 0.5;
-        final double differenceZ = ent.posZ - mc.thePlayer.posZ;
-        final float rotationYaw = (float) (Math.atan2(differenceZ, differenceX) * 180.0D / Math.PI) - 90.0f;
-        final float rotationPitch = (float) (Math.atan2(differenceY, mc.thePlayer.getDistanceToEntity(ent)) * 180.0D
-                / Math.PI);
-        final float finishedYaw = mc.thePlayer.rotationYaw
-                + MathHelper.wrapAngleTo180_float(rotationYaw - mc.thePlayer.rotationYaw);
-        final float finishedPitch = mc.thePlayer.rotationPitch
-                + MathHelper.wrapAngleTo180_float(rotationPitch - mc.thePlayer.rotationPitch);
-        return new float[]{finishedYaw, -MathHelper.clamp_float(finishedPitch, -90, 90)};
-    }
+	public void attack() {
+
+	}
     
     @EventTarget
     public void onPost(EventPostUpdate e) {
@@ -123,6 +103,7 @@ public class Aura extends Module {
     }
 
     private boolean shouldAttack() {
+//    	if (ThreadLocalRandom.current().nextInt(0, 100) <= hitChance.getValDouble()) return false;
         return this.timer.hasReached(1000.0 / (MathUtils.randomNumber(maxCps.getValDouble(), minCps.getValDouble())));
     }
     

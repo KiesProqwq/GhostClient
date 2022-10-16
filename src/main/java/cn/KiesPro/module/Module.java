@@ -54,7 +54,7 @@ public class Module {
 	public void setVisible(boolean visible) {
 		this.visible = visible;
 	}
-
+	
 	public boolean isToggled() {
 		return toggled;
 	}

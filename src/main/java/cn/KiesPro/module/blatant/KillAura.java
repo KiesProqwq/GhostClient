@@ -294,22 +294,6 @@ public class KillAura extends Module {
 
         return arraylist;
     }
-    
-	public EntityLivingBase getTarget(double range) {
-		EntityLivingBase target = null;
-		double cDist = 100;
-		for (Entity e : mc.theWorld.loadedEntityList) {
-			double dist = mc.thePlayer.getDistanceToEntity(e);
-			if (dist < range && e != mc.thePlayer && (e instanceof EntityPlayer || e instanceof EntityMob || e instanceof EntityAnimal)) {
-				if (cDist > dist) {
-					target = (EntityLivingBase) e;
-					cDist = dist;
-				}
-			}
-			
-		}
-		return target;
-	}
 
     private boolean isValid(Entity e) {
     	

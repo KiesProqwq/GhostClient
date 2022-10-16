@@ -32,6 +32,14 @@ public class ColorUtils {
         return 255 << 24 | r << 16 | g << 8 | b;
     }
     
+    public static int reAlpha(int color, float alpha) {
+        Color c = new Color(color);
+        float r = ((float) 1 / 255) * c.getRed();
+        float g = ((float) 1 / 255) * c.getGreen();
+        float b = ((float) 1 / 255) * c.getBlue();
+        return new Color(r, g, b, alpha).getRGB();
+    }
+    
 	public static Color getClickGUIColor(){
 		Module clickgui = Client.instance.moduleManager.getModule("ClickGui");
 		return new Color((int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiRed").getValDouble(), (int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiGreen").getValDouble(), (int)Client.instance.settingsManager.getSettingByName(clickgui, "GuiBlue").getValDouble());

@@ -38,7 +38,7 @@ public class ConfigManager {
 		ArrayList<String> toSave = new ArrayList<String>();
 		
 		for (Module mod : Client.instance.moduleManager.modules) {
-			toSave.add("MOD:" + mod.getName() + ":" + mod.isToggled() + ":" + mod.getKey());
+			toSave.add("MOD:" + mod.getName() + ":" + mod.isToggled() + ":" + mod.getKey() + ":" + mod.isVisible());
 		}
 		
 		for (Setting set : Client.instance.settingsManager.getSettings()) {
@@ -72,7 +72,7 @@ public class ConfigManager {
         ArrayList<String> toSave = new ArrayList<String>();
 
 		for (Module mod : Client.instance.moduleManager.modules) {
-			toSave.add("MOD:" + mod.getName() + ":" + mod.isToggled() + ":" + mod.getKey());
+			toSave.add("MOD:" + mod.getName() + ":" + mod.isToggled() + ":" + mod.getKey() + ":" + mod.isVisible());
 		}
 		
 		for (Setting set : Client.instance.settingsManager.getSettings()) {
@@ -120,6 +120,8 @@ public class ConfigManager {
 				if (m != null) {
 					m.setToggled(Boolean.parseBoolean(args[2]));
 					m.setKey(Integer.parseInt(args[3]));
+					//new
+					m.setVisible(Boolean.parseBoolean(args[4]));
 				}
 			} else if (s.toLowerCase().startsWith("set:")) {
 				Module m = Client.instance.moduleManager.getModule(args[2]);

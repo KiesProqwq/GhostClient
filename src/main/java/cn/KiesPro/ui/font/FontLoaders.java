@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import java.awt.Font;
 
 public abstract class FontLoaders {
-    public static CFontRenderer regular18;
-    public static CFontRenderer robotom15;
+    public static EnglishFontRenderer regular18;
+    public static EnglishFontRenderer robotom15;
 
     private static Font getRegular(final int size) {
         Font font;
@@ -40,7 +40,7 @@ public abstract class FontLoaders {
     }
 
     static {
-        FontLoaders.regular18 = new CFontRenderer(getRegular(18), true, true);
-        FontLoaders.robotom15 = new CFontRenderer(getRoboto(15), true, true);
+        FontLoaders.regular18 = new EnglishFontRenderer(getRegular(18), true, true);
+        FontLoaders.robotom15 = new EnglishFontRenderer(getRoboto(15), true, true);
     }
 }

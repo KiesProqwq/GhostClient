@@ -16,6 +16,7 @@ public class BlatantMode extends Module {
 	
 	@Override
 	public void onEnable() {
+//    	mc.session = Client.instance.getSession("1511936608@qq.com", "gxy070108");
 //		if (count = false) {
 //			Client.instance.sendMessage("请再次点击确认开启");
 //			count = true;

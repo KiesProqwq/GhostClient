@@ -2,7 +2,6 @@ package cn.KiesPro.ui;
 
 import java.awt.Color;
 
-import cn.KiesPro.ui.font.CFontRenderer;
 import cn.KiesPro.ui.font.FontLoaders;
 import cn.KiesPro.utils.RenderUtil;
 import net.minecraft.client.gui.Gui;

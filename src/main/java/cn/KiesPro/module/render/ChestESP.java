@@ -25,7 +25,7 @@ public class ChestESP extends Module {
     public void onRender3D(EventRender3D event) {
     	//for遍历全部的Tile生物
     	  for (TileEntity e : mc.theWorld.loadedTileEntityList) {
-    		  //这种if关系就好了
+    		  
     		  if (Client.instance.settingsManager.getSettingByName(this, "Chest").isEnabled()) {
     			  if (e instanceof TileEntityChest) {
     				  //yellow

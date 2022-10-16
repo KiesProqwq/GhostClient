@@ -48,7 +48,6 @@ public class ModuleManager {
 		this.modules.add(new NoHurtCam());
 		this.modules.add(new ViewClip());
 		this.modules.add(new NameTags());
-		this.modules.add(new NewNameTags());
 		this.modules.add(new ChestESP());
 		this.modules.add(new InventoryDisplay());
 		this.modules.add(new SessionInfo());
@@ -57,6 +56,7 @@ public class ModuleManager {
 		this.modules.add(new Sprint());
 		this.modules.add(new Eagle());
 		this.modules.add(new NoJumpDelay());
+		this.modules.add(new KeepSprint());
 		this.modules.add(new Speed());
 		this.modules.add(new NoSlow());
 

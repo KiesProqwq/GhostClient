@@ -48,4 +48,15 @@ public class RotationUtil {
         return MathHelper.wrapAngleTo180_float(-(f - (float) d4));
     }
     
+    public static float[] getRotationsToEnt(Entity ent) {
+        final double differenceX = ent.posX - mc.thePlayer.posX;
+        final double differenceY = (ent.posY + ent.height) - (mc.thePlayer.posY + mc.thePlayer.height) - 0.5;
+        final double differenceZ = ent.posZ - mc.thePlayer.posZ;
+        final float rotationYaw = (float) (Math.atan2(differenceZ, differenceX) * 180.0D / Math.PI) - 90.0f;
+        final float rotationPitch = (float) (Math.atan2(differenceY, mc.thePlayer.getDistanceToEntity(ent)) * 180.0D / Math.PI);
+        final float finishedYaw = mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(rotationYaw - mc.thePlayer.rotationYaw);
+        final float finishedPitch = mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(rotationPitch - mc.thePlayer.rotationPitch);
+        return new float[]{finishedYaw, -MathHelper.clamp_float(finishedPitch, -90, 90)};
+    }
+    
 }

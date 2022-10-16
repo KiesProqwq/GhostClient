@@ -11,10 +11,13 @@ import cn.KiesPro.event.events.EventRender2D;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
 import cn.KiesPro.settings.Setting;
+import cn.KiesPro.utils.RenderUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.ThreadDownloadImageData;
 import net.minecraft.network.handshake.client.C00Handshake;
+import net.minecraft.util.ResourceLocation;
 
 public class SessionInfo extends Module {
 	
@@ -41,12 +44,14 @@ public class SessionInfo extends Module {
 	    int y = (int) Client.instance.settingsManager.getSettingByName(this, "PosY").getValDouble();
 	    
 	    String username = mc.getSession().getUsername();
+//	    ResourceLocation head = new ResourceLocation(imageData);
+//	    ThreadDownloadImageData imageData = new ThreadDownloadImageData(null,"https://minotar.net/avatar/" + username,null,null);
 	    
         Gui.drawRect(x, y, x + width, y + height, new Color(0, 0, 0, 140).getRGB());
         Gui.drawRect(x, y, x + width, (int)(y + 0.8), new Color(255, 255, 255, 255).getRGB());
         fr.drawString("Session Infomation", x + 5, y + 4, new Color(255, 255, 255, 255).getRGB());
         fr.drawString(username, x + 17, y + 15, new Color(255, 255, 255, 255).getRGB());
-        //RenderUtil.drawImage(mc.getSession().getHead(), x + 4, PosY + 13, 10, 10);
+//        RenderUtil.drawImage(mc.getSession().getHead(), x + 4, PosY + 13, 10, 10);
         fr.drawString("Current Config: " + "Default" , x + 4, y + 25, new Color(255, 255, 255, 255).getRGB());
         
         GL11.glPushMatrix();
@@ -78,4 +83,5 @@ public class SessionInfo extends Module {
             H = H + 1;
         }
 	}
+	
 }

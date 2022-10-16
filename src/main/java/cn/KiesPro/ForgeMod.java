@@ -5,7 +5,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@Mod(modid="BeterFPS", name="BeterFPS", version="1.6", acceptedMinecraftVersions="[1.8.9]")
+@Mod(modid="BeterFPS", name="BeterFPS", version="1.72", acceptedMinecraftVersions="[1.8.9]")
 public class ForgeMod {
 	
 	/*
@@ -15,6 +15,9 @@ public class ForgeMod {
 	 * 1.能用if for就不用其他逻辑控制语句
 	 * 2.在赋值中每个值之间空格最终“;”不空格
 	 * 3.本代码使用了两个Event系统为darkmagican6<@EventTarget>，MinecraftForge<@SubscribeEvent>(因为我是懒狗)
+	 * 
+	 * Tips:
+	 * 1.用这个JvmArgs会加快加载世界速度 -DisableExplicitGC
 	 * 
 	 * 你会遇到许多的shit代码看不懂 改不明白
 	 * 你会遇到的Reach.java,HitBox.java

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import cn.KiesPro.Client;
 import cn.KiesPro.module.Category;
 import cn.KiesPro.module.Module;
-import cn.KiesPro.module.combat.AntiBot;
 import cn.KiesPro.settings.Setting;
 import cn.KiesPro.utils.HUDUtils;
 import cn.KiesPro.utils.color.ColorUtils;
@@ -16,7 +15,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 

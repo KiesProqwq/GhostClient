@@ -64,7 +64,7 @@ public class Notification {
         final Minecraft mc = Minecraft.getMinecraft();
         final ScaledResolution sr = new ScaledResolution(mc);
         
-        final Color color = new Color(0, 0, 0, 25);
+        Color color = new Color(0, 0, 0, 0);
         Color color2 = new Color(0, 140, 255);
 
         String icon = null;
