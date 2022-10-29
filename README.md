@@ -5,8 +5,10 @@ This is a shit forge hacker Client(use mixin)
 It skid many many Client
 
 if you want to build you can use
-    `radlew setupDecompWorkspace`
-    `radlew build`
+
+`gradlew setupDecompWorkspace`
+
+`gradlew build`
 
   Crdits:
 	 [Sk1erLLC/Patcher](https://github.com/Sk1erLLC/Patcher)
