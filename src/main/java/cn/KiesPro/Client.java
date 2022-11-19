@@ -47,9 +47,6 @@ public class Client
     //BlatantMode
     public boolean blatant = false;
     
-    String account = "1511936608@qq.com";
-    String password = "gxy070108";
-    
     public void init() {
         MinecraftForge.EVENT_BUS.register(this);
         FMLCommonHandler.instance().bus().register(this);
